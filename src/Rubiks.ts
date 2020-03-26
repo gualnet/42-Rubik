@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import Cubie from './Cubie';
+import { Vector3 } from 'babylonjs';
 
 enum ROTATE {
   'U',// UP
@@ -42,9 +43,49 @@ class Rubiks {
   /**
    *
    */
-  public rotate = (type: ROTATE) => {
-    
-    
+  /**
+   * name
+   */
+  public rotate(input: string) {
+    let key = input// ? input.toLowerCase() : null
+    const cubie0 = this.cubies[0];
+
+    const center = new BABYLON.Vector3(0, 0, 0);
+    const axisX = new BABYLON.Vector3(1, 0, 0);
+    const axisY = new BABYLON.Vector3(0, 1, 0);
+    let pos;
+    for (const cubie of this.cubies) {
+      pos = cubie.getPosition();
+      console.log("key", key);
+      switch (key) {
+        case "u":
+          if (pos.y === 1) {
+            cubie.inner.rotateAround(center, axisY, Math.PI/2);
+          }
+          break;
+        case "U":
+          if (pos.y === 1) {
+            cubie.inner.rotateAround(center, axisY, -Math.PI/2);
+          }
+          break;
+        case "l":
+          if (pos.x === 1) {
+            cubie.inner.rotateAround(center, axisX, Math.PI/2);
+          }
+          break;
+        case "L":
+          if (pos.x === 1) {
+            cubie.inner.rotateAround(center, axisX, -Math.PI/2);
+          }
+          break;
+        
+      
+        default:
+          console.log("")
+          break;
+      }
+      
+    }
 
   }
 

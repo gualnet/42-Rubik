@@ -10,7 +10,7 @@ export default class Viewer extends React.Component {
 
     // Create a camera allways pointing on the center of the scene
     var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.setPosition(new BABYLON.Vector3(5, 10, 10));
+    camera.setPosition(new BABYLON.Vector3(5, 10, -10));
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 
@@ -22,6 +22,19 @@ export default class Viewer extends React.Component {
 
     // const cube = new Cubie(scene);
     const rubiks = new Rubiks(scene);
+
+    // Action handling
+
+    scene.actionManager = new BABYLON.ActionManager(scene);
+    scene.actionManager.registerAction(
+      new BABYLON.ExecuteCodeAction(
+        BABYLON.ActionManager.OnKeyDownTrigger, (e) => {
+          console.log("EVENT", e.sourceEvent);
+          rubiks.rotate(e.sourceEvent.key);
+        }
+      )
+      
+    );
 
     engine.runRenderLoop(async () => {
       if (scene) {
