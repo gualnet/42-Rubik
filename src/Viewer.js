@@ -15,7 +15,8 @@ export default class Viewer extends React.Component {
     camera.attachControl(canvas, true);
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0), scene);
+    const light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, -10, 0), scene);
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 

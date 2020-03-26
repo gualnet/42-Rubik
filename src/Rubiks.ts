@@ -1,6 +1,20 @@
 import * as BABYLON from 'babylonjs';
 import Cubie from './Cubie';
 
+enum ROTATE {
+  'U',// UP
+  'D',// DOWN
+  'L',// LEFT
+  'R',// RIGHT
+  'F',// FRONT
+  'B',// BACK
+}
+
+const faceColors = [
+  new BABYLON.Vector4(0, 0, 1, 0),
+  new BABYLON.Vector4(1, 0, 0, 0),
+]
+
 class Rubiks {
   private cubies: Array<Cubie>;
 
@@ -20,20 +34,7 @@ class Rubiks {
 
     for (const cubie of this.cubies) {
       let pos = cubie.getPosition();
-      if (pos.x === 1) {
-        // ROUGE / face UV 2
-        console.log("coucou")
-      } else if (pos.x === -1) {
-        // Orange / face UV 3
-      } else if (pos.y === 1) {
-        // BLANC / face UV 4
-      } else if (pos.x === 4) {
-        // JAUNE / face UV 5
-      } else if (pos.z === 1) {
-        // VERT / face UV 0
-      } else if (pos.x === -1) {
-        // BLEU / face UV 1
-      }
+      
       
     }
   }
@@ -41,7 +42,7 @@ class Rubiks {
   /**
    *
    */
-  public createRubics = (scene: BABYLON.Scene) => {
+  public rotate = (type: ROTATE) => {
     
     
 
