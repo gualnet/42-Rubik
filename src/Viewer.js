@@ -29,8 +29,13 @@ export default class Viewer extends React.Component {
     scene.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(
         BABYLON.ActionManager.OnKeyDownTrigger, (e) => {
-          console.log("EVENT", e.sourceEvent);
-          rubiks.rotate(e.sourceEvent.key);
+          // console.log("EVENT", e.sourceEvent);
+          const rotationInput = ['u','d','f','b','l','r','U','D','F','B','L','R'];
+          if (rotationInput.includes(e.sourceEvent.key)) {
+            rubiks.rotate(e.sourceEvent.key);
+          } else {
+            // console.error("Unhandled key", e.sourceEvent.key)
+          }
         }
       )
       

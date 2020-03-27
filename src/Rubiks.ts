@@ -1,20 +1,15 @@
 import * as BABYLON from 'babylonjs';
 import Cubie from './Cubie';
-import { Vector3 } from 'babylonjs';
 
-enum ROTATE {
-  'U',// UP
-  'D',// DOWN
-  'L',// LEFT
-  'R',// RIGHT
-  'F',// FRONT
-  'B',// BACK
-}
+// enum ROTATE {
+//   'U',// UP     (0,1,0)
+//   'D',// DOWN   (0,-1,0)
+//   'L',// LEFT   (1,0,0)
+//   'R',// RIGHT  (-1,0,0)
+//   'F',// FRONT  (0,0,-1)
+//   'B',// BACK   (0,0,1)
+// }
 
-const faceColors = [
-  new BABYLON.Vector4(0, 0, 1, 0),
-  new BABYLON.Vector4(1, 0, 0, 0),
-]
 
 class Rubiks {
   private cubies: Array<Cubie>;
@@ -24,7 +19,7 @@ class Rubiks {
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
         for (let k = -1; k <= 1; k++) {
-          if (i == 0 && j == 0 && k == 0) {
+          if (i === 0 && j === 0 && k === 0) {
             //do nothing
           } else {
             this.cubies.push(new Cubie(scene, new BABYLON.Vector3( i, j, k)))
@@ -32,32 +27,21 @@ class Rubiks {
         }
       }
     }
-
-    for (const cubie of this.cubies) {
-      let pos = cubie.getPosition();
-      
-      
-    }
   }
 
   /**
-   *
-   */
-  /**
-   * name
+   * rotate
    */
   public rotate(input: string) {
-    let key = input// ? input.toLowerCase() : null
-    const cubie0 = this.cubies[0];
-
+    const key = input;
     const center = new BABYLON.Vector3(0, 0, 0);
     const axisX = new BABYLON.Vector3(1, 0, 0);
     const axisY = new BABYLON.Vector3(0, 1, 0);
+    const axisZ = new BABYLON.Vector3(0, 0, 1);
     let pos;
     for (const cubie of this.cubies) {
       pos = cubie.getPosition();
-      console.log("key", key);
-      switch (key) {
+      switch (key) { // min: clockwise - MAJ: counter-clockwise
         case "u":
           if (pos.y === 1) {
             cubie.inner.rotateAround(center, axisY, Math.PI/2);
@@ -68,6 +52,17 @@ class Rubiks {
             cubie.inner.rotateAround(center, axisY, -Math.PI/2);
           }
           break;
+        case "d":
+          if (pos.y === -1) {
+            cubie.inner.rotateAround(center, axisY, Math.PI/2);
+          }
+          break;
+        case "D":
+          if (pos.y === -1) {
+            cubie.inner.rotateAround(center, axisY, -Math.PI/2);
+          }
+          break;
+          
         case "l":
           if (pos.x === 1) {
             cubie.inner.rotateAround(center, axisX, Math.PI/2);
@@ -78,10 +73,40 @@ class Rubiks {
             cubie.inner.rotateAround(center, axisX, -Math.PI/2);
           }
           break;
+        case "r":
+          if (pos.x === -1) {
+            cubie.inner.rotateAround(center, axisX, Math.PI/2);
+          }
+          break;
+        case "R":
+          if (pos.x === -1) {
+            cubie.inner.rotateAround(center, axisX, -Math.PI/2);
+          }
+          break;
         
+        case "f":
+          if (pos.z === -1) {
+            cubie.inner.rotateAround(center, axisZ, Math.PI/2);
+          }
+          break;
+        case "F":
+          if (pos.z === -1) {
+            cubie.inner.rotateAround(center, axisZ, -Math.PI/2);
+          }
+          break;
+        case "b":
+          if (pos.z === 1) {
+            cubie.inner.rotateAround(center, axisZ, Math.PI/2);
+          }
+          break;
+        case "B":
+          if (pos.z === 1) {
+            cubie.inner.rotateAround(center, axisZ, -Math.PI/2);
+          }
+          break;
       
         default:
-          console.log("")
+          console.log("Unhandled key", key)
           break;
       }
       
