@@ -10,7 +10,6 @@ import Cubie from './Cubie';
 //   'B',// BACK   (0,0,1)
 // }
 
-
 class Rubiks {
   private cubies: Array<Cubie>;
 

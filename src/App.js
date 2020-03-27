@@ -1,13 +1,18 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+
 import './App.css';
+import store from './store';
 import Viewer from './Viewer';
-import FileUploadBtn from './components/FileUploadBtn';
+import FileUploadBtn from './containers/FileUploadBtn';
 
 function App() {
   return (
     <div className="App">
-        <FileUploadBtn />
+      <Provider store={store}>
+        <FileUploadBtn test="true"/>
         <Viewer />
+      </Provider>
     </div>
   );
 }
