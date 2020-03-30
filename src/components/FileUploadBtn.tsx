@@ -15,8 +15,7 @@ class FileUploadBtn extends React.Component<IFileUploadBtnProps, IFileUploadBtnS
       this.props.setShuffleSequence(content);
     };
     fileReader.readAsText(e.target.files[0]);
-
-  }
+  };
 
   render() {
     const { shuffleSequence } = this.props;
@@ -29,7 +28,5 @@ class FileUploadBtn extends React.Component<IFileUploadBtnProps, IFileUploadBtnS
     );
   }
 }
-
-
 
 export default FileUploadBtn;

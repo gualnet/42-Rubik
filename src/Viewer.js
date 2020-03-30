@@ -1,11 +1,16 @@
 import React from 'react';
 import * as BABYLON from 'babylonjs';
+// import * as BABYLON from '@babylonjs/core';
+import * as GUI from '@babylonjs/gui';
 import Scene from './Scene'; // import the component above linking to file we just created.
-import Cubie from './Cubie';
+// import Cubie from './Cubie';
 import Rubiks from './Rubiks'
+
+BABYLON.GUI = {...GUI};
 
 export default class Viewer extends React.Component {
   onSceneMount = (e) => {
+    // console.log("GUI", BABYLON.GUI);
     const { canvas, scene, engine } = e;
 
     // Create a camera allways pointing on the center of the scene
@@ -20,11 +25,20 @@ export default class Viewer extends React.Component {
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 
+    // GUI
+    // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    // var button = BABYLON.GUI.Button.CreateImageButton("but", "Click Me", './public/textures/T1.png');
+    // button.width = 0.2;
+    // button.height = "40px";
+    // button.color = "white";
+    // button.background = "green";
+    // advancedTexture.addControl(button); 
+
     // const cube = new Cubie(scene);
     const rubiks = new Rubiks(scene);
 
     // Action handling
-
     scene.actionManager = new BABYLON.ActionManager(scene);
     scene.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(
