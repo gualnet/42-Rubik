@@ -51,7 +51,7 @@ export default class Viewer extends React.Component {
   render() {
     return (
       <div className="ctn-viewer">
-        <Scene onSceneMount={this.onSceneMount} />
+        <Scene height='800' width='800' onSceneMount={this.onSceneMount} />
       </div>
     );
   }
