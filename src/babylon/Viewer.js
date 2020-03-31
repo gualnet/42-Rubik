@@ -44,14 +44,8 @@ export default class Viewer extends React.Component {
     button.children[0].fontSize = 12;
     button.onPointerClickObservable.add(() => {
       let { shuffleSequence } = store.getState().mainReducer;
-      // if (shuffleSequence.length < 1) return;
-      console.log('machine', shuffleSequence);
-      shuffleSequence = shuffleSequence.replace('\n', ' ');
-
-      const shuffleArr = shuffleSequence.split(' ');
-      console.log('machine2', shuffleArr);
-      shuffleArr.map(letter => rubiks.rotate(letter));
-      // rubiks.rotate('u');
+      if (shuffleSequence.length < 1) return;
+      shuffleSequence.map(letter => rubiks.rotate(letter));
     })
     advancedTexture.addControl(button);
     

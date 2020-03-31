@@ -12,7 +12,7 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    setShuffleSequence: (param: string) => {
+    setShuffleSequence: (param: string[]) => {
       dispatch(actions.setSchuffleSequence(param));
     },
   };
