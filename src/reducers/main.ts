@@ -31,14 +31,10 @@ const mainReducer = (state = initState, action: Actions): State => {
       state = { ...initState };
       break;
     case actionTypes.SET_SHUFFLE_SEQ:
-      console.log('av state', state)
-      console.log('action.payload', action.payload)
-
       state = {
         ...state,
         shuffleSequence: action.payload,
       };
-      console.log('ap state', state)
       break;
 
 
