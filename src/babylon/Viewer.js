@@ -1,12 +1,15 @@
 import React from 'react';
-import * as BABYLON from 'babylonjs';
-// import * as BABYLON from '@babylonjs/core';
+// import * as BABYLON from 'babylonjs';
+import * as CORE from '@babylonjs/core/';
 import * as GUI from '@babylonjs/gui';
 import Scene from './Scene'; // import the component above linking to file we just created.
-// import Cubie from './Cubie';
-import Rubiks from './Rubiks'
+import Rubiks from '../Rubiks'
+import store from '../store';
 
-BABYLON.GUI = {...GUI};
+const BABYLON = {
+  ...CORE,
+  GUI,
+}
 
 export default class Viewer extends React.Component {
   onSceneMount = (e) => {
@@ -26,14 +29,32 @@ export default class Viewer extends React.Component {
     light.intensity = 0.7;
 
     // GUI
-    // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
-    // var button = BABYLON.GUI.Button.CreateImageButton("but", "Click Me", './public/textures/T1.png');
-    // button.width = 0.2;
-    // button.height = "40px";
-    // button.color = "white";
-    // button.background = "green";
-    // advancedTexture.addControl(button); 
+    var button = BABYLON.GUI.Button.CreateImageButton("btn0", "apply sequence", './public/textures/T1.png');
+    const btnSize = {
+      width: '70px', height: '40px', top: `${-400+40/2}px`, left: `${-400+100/2}`
+    }
+    button.width = btnSize.width;
+    button.height = btnSize.height;
+    button.top = btnSize.top;
+    button.left = btnSize.left;
+    button.color = "white";
+    button.background = "black";
+    button.children[0].fontSize = 12;
+    button.onPointerClickObservable.add(() => {
+      let { shuffleSequence } = store.getState().mainReducer;
+      // if (shuffleSequence.length < 1) return;
+      console.log('machine', shuffleSequence);
+      shuffleSequence = shuffleSequence.replace('\n', ' ');
+
+      const shuffleArr = shuffleSequence.split(' ');
+      console.log('machine2', shuffleArr);
+      shuffleArr.map(letter => rubiks.rotate(letter));
+      // rubiks.rotate('u');
+    })
+    advancedTexture.addControl(button);
+    
 
     // const cube = new Cubie(scene);
     const rubiks = new Rubiks(scene);
@@ -52,7 +73,6 @@ export default class Viewer extends React.Component {
           }
         }
       )
-      
     );
 
     engine.runRenderLoop(async () => {
