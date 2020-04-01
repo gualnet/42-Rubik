@@ -26,7 +26,7 @@ class FileUploadBtn extends React.PureComponent<IFileUploadBtnProps, IFileUpload
   };
   
   private onChangeHandler = (e: any) => {
-    let fileReader = new FileReader;
+    let fileReader = new FileReader();
     fileReader.onloadend = () => {
       const content = fileReader.result;
       // console.log("file content", content);
@@ -38,7 +38,7 @@ class FileUploadBtn extends React.PureComponent<IFileUploadBtnProps, IFileUpload
 
   render() {
     const { shuffleSequence } = this.props;
-    console.log('shuffleSequence', shuffleSequence, typeof shuffleSequence);
+    // console.log('shuffleSequence', shuffleSequence, typeof shuffleSequence);
     return (
       <div className="Btn" id="FileUploadBtn">
         <input type="file" name="file" onChange={this.onChangeHandler} />
