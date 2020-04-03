@@ -1,5 +1,6 @@
-import * as BABYLON from 'babylonjs';
 import React from 'react';
+import * as BABYLON from '@babylonjs/core';
+
 
 export default class Scene extends React.Component {
 
@@ -48,7 +49,8 @@ export default class Scene extends React.Component {
   render() {
     // 'rest' can contain additional properties that you can flow through to canvas:
     // (id, className, etc.)
-    const { width, height, ...rest } = this.props;
+    // const { width, height, ...rest } = this.props;
+    const { width, height } = this.props;
 
     const opts = {};
     if (width !== undefined && height !== undefined) {
