@@ -1,11 +1,11 @@
 
 export interface State {
-  shuffleSequence: string;
+  shuffleSequence: string[];
 };
 
 export interface Actions {
   type: actionTypes,
-  payload: string,
+  payload: string[],
 };
 
 export enum actionTypes {
@@ -14,14 +14,14 @@ export enum actionTypes {
 };
 
 export const actions = {
-  setSchuffleSequence: (status: string): Actions => ({
+  setSchuffleSequence: (status: string[]): Actions => ({
     type: actionTypes.SET_SHUFFLE_SEQ,
     payload: status,
   }),
 }
 
 const initState: State = {
-  shuffleSequence: "",
+  shuffleSequence: [],
 };
 
 /* eslint-disable no-param-reassign */

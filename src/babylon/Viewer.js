@@ -1,8 +1,10 @@
 import React from 'react';
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from '@babylonjs/core';
+
 import Scene from './Scene'; // import the component above linking to file we just created.
-import Cubie from './Cubie';
-import Rubiks from './Rubiks'
+import Rubiks from '../Rubiks'
+import {initGUI} from './GUI';
+
 
 export default class Viewer extends React.Component {
   onSceneMount = (e) => {
@@ -14,31 +16,29 @@ export default class Viewer extends React.Component {
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 
-    // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0), scene);
-    const light2 = new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, -10, 0), scene);
-    // Default intensity is 1. Let's dim the light a small amount
-    light.intensity = 0.7;
+    // Creates ligths
+    new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0), scene);
+    new BABYLON.HemisphericLight("light2", new BABYLON.Vector3(0, -10, 0), scene);
 
-    // const cube = new Cubie(scene);
+    
     const rubiks = new Rubiks(scene);
+    
+    initGUI(scene, rubiks);
 
     // Action handling
-
     scene.actionManager = new BABYLON.ActionManager(scene);
     scene.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(
         BABYLON.ActionManager.OnKeyDownTrigger, (e) => {
           // console.log("EVENT", e.sourceEvent);
-          const rotationInput = ['u','d','f','b','l','r','U','D','F','B','L','R'];
+          const rotationInput = ['u', 'd', 'f', 'b', 'l', 'r', 'U', 'D', 'F', 'B', 'L', 'R'];
           if (rotationInput.includes(e.sourceEvent.key)) {
             rubiks.rotate(e.sourceEvent.key);
           } else {
-            // console.error("Unhandled key", e.sourceEvent.key)
+            console.error("Unhandled key", e.sourceEvent.key)
           }
         }
       )
-      
     );
 
     engine.runRenderLoop(async () => {
@@ -51,7 +51,7 @@ export default class Viewer extends React.Component {
   render() {
     return (
       <div className="ctn-viewer">
-        <Scene onSceneMount={this.onSceneMount} />
+        <Scene height='800' width='800' onSceneMount={this.onSceneMount} />
       </div>
     );
   }
