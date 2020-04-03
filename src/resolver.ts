@@ -13,29 +13,72 @@ enum RUBIK {
   UR="UR", UF="UF", UL="UL", UB="UB", DR="DR",DF="DF", DL="DL", DB="DB", FR="FR", FL="FL", BL="BL", BR="BR",
 }
 const Corners: object = {
-  [RUBIK.URF]: {c: RUBIK.URF, o: 2},
+  [RUBIK.URF]: {c: RUBIK.URF, o: 0},
   [RUBIK.ULF]: {c: RUBIK.ULF, o: 0},
   [RUBIK.ULB]: {c: RUBIK.ULB, o: 0},
-  [RUBIK.UBR]: {c: RUBIK.UBR, o: 1}, 
-  [RUBIK.DFR]: {c: RUBIK.DFR, o: 1},
+  [RUBIK.UBR]: {c: RUBIK.UBR, o: 0}, 
+  [RUBIK.DFR]: {c: RUBIK.DFR, o: 0},
   [RUBIK.DLF]: {c: RUBIK.DLF, o: 0},
   [RUBIK.DBL]: {c: RUBIK.DBL, o: 0},
-  [RUBIK.DRB]: {c: RUBIK.DRB, o: 2},
+  [RUBIK.DRB]: {c: RUBIK.DRB, o: 0},
 };
 const Edges = {
-  [RUBIK.UR]: {c: RUBIK.UR, o : 0},
-  [RUBIK.UF]: {c: RUBIK.UF, o : 0},
-  [RUBIK.UL]: {c: RUBIK.UL, o : 0},
-  [RUBIK.UB]: {c: RUBIK.UB, o : 0},
-  [RUBIK.DR]: {c: RUBIK.DR, o : 0},
-  [RUBIK.DF]: {c: RUBIK.DF, o : 0},
-  [RUBIK.DL]: {c: RUBIK.DL, o : 0},
-  [RUBIK.DB]: {c: RUBIK.DB, o : 0},
-  [RUBIK.FR]: {c: RUBIK.FR, o : 0},
-  [RUBIK.FL]: {c: RUBIK.FL, o : 0},
-  [RUBIK.BL]: {c: RUBIK.BL, o : 0},
-  [RUBIK.BR]: {c: RUBIK.BR, o : 0},
+  [RUBIK.UR]: {e: RUBIK.UR, o: 0},
+  [RUBIK.UF]: {e: RUBIK.UF, o: 0},
+  [RUBIK.UL]: {e: RUBIK.UL, o: 0},
+  [RUBIK.UB]: {e: RUBIK.UB, o: 0},
+  [RUBIK.DR]: {e: RUBIK.DR, o: 0},
+  [RUBIK.DF]: {e: RUBIK.DF, o: 0},
+  [RUBIK.DL]: {e: RUBIK.DL, o: 0},
+  [RUBIK.DB]: {e: RUBIK.DB, o: 0},
+  [RUBIK.FR]: {e: RUBIK.FR, o: 0},
+  [RUBIK.FL]: {e: RUBIK.FL, o: 0},
+  [RUBIK.BL]: {e: RUBIK.BL, o: 0},
+  [RUBIK.BR]: {e: RUBIK.BR, o: 0},
 }
+
+const isGreaterThan= (element: RUBIK, refElement: RUBIK) => {
+  // HELPER
+  const edgeTab = [RUBIK.UR, RUBIK.UF, RUBIK.UL, RUBIK.UB, RUBIK.DR,RUBIK.DF, RUBIK.DL, RUBIK.DB, RUBIK.FR, RUBIK.FL, RUBIK.BL, RUBIK.BR];
+  const cornerTab = [RUBIK.URF, RUBIK.ULF, RUBIK.ULB, RUBIK.UBR, RUBIK.DFR, RUBIK.DLF, RUBIK.DBL, RUBIK.DRB];
+  const tab = edgeTab.includes(refElement) ? edgeTab : cornerTab;
+  if (tab.indexOf(element) >= tab.indexOf(refElement)) return true;
+  return false;
+};
+const binomial = (n:number, k:number): number => {
+  // HELPER
+  let coeff = 1;
+  for (let x = n-k+1; x <= n; x++) coeff *= x;
+  for (let x = 1; x <= k; x++) coeff /= x;
+  console.log("binomial", n, k, coeff);
+ return coeff;
+};
+
+const UDSliceCoordinate = () => {
+  const occupied = new Array(11).fill(false);
+
+  // Populate accupied tab
+  let i = 0;
+  for (let edge of Object.values(Edges)) {
+    occupied[i] = isGreaterThan(edge.e, RUBIK.FR);
+    i++;
+  };
+
+  // 
+  let result = 0;
+  let k = 3;
+  let n = 11;
+  while (k >= 0 && n >= 0) {
+    console.log("\n", n, k);
+    if (occupied[n]) {
+      k--;
+    } else {
+      result = result + binomial(n, k)
+    }
+    n--
+  }
+  return result;
+};
 
 /**
  * Corners orientation is described by a number from 0 to 2186 (3^7-1)
@@ -72,17 +115,12 @@ const edgeOrientationCoordinate = () => {
   return result;
 };
 
-const UDSliceCoordinate = () => {
-  const array = new Array(11).fill(false);
-  console.log(array);
 
-
-};
 
 const resolver = async () => {
   // console.log("Corners", Corners);
-  const COC = cornerOrientationCoordinate();
-  const EOC = edgeOrientationCoordinate();
+  cornerOrientationCoordinate();
+  edgeOrientationCoordinate();
   UDSliceCoordinate();
 
   return true;
