@@ -2,6 +2,8 @@ import * as GUI from '@babylonjs/gui';
 
 import store from '../store';
 import Rubiks from '../Rubiks';
+import resolver from '../resolver';
+// import Cubie from '../Cubie';
 
 const BUTTON_OPTIONS = {
   name: "name",
@@ -13,9 +15,10 @@ const BUTTON_OPTIONS = {
   fontSize: 12,
 }
 
-const createBtn = (btnOptions: any, UIManager: GUI.AdvancedDynamicTexture, rubiks: Rubiks): void => {
-  const button = GUI.Button.CreateImageButton(btnOptions.name, btnOptions.text, "");
+const BUTTONS: Array<GUI.Button> = [];
 
+const createBtn = (btnOptions: any): GUI.Button => {
+  const button = GUI.Button.CreateImageButton(btnOptions.name, btnOptions.text, "");
   button.width = btnOptions.width;
   button.height = btnOptions.height;
   button.top = btnOptions.top;
@@ -23,29 +26,54 @@ const createBtn = (btnOptions: any, UIManager: GUI.AdvancedDynamicTexture, rubik
   button.color = btnOptions.color;
   button.background = btnOptions.background;
   button.children[0].fontSize = btnOptions.fontSize;
-
-  // Func to be executed when we press on the button
-  button.onPointerClickObservable.add(() => {
-    const { shuffleSequence } = store.getState().mainReducer;
-    if (shuffleSequence.length < 1) return;
-    shuffleSequence.map((letter: string) => rubiks.rotate(letter));
-  });
-
-  UIManager.addControl(button);
+  BUTTONS.push(button);
+  return button;
 };
 
 export const initGUI = (scene: any, rubiks: Rubiks) => {
 
   const UIManager = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
-  const btnOption1 = {
+  // Button1
+  const btn1 = createBtn({
     ...BUTTON_OPTIONS,
     text: "apply sequence",
     width: '70px', height: '40px',
     top: `${-400 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
-  };
+  });
+  btn1.onPointerClickObservable.add(() => {
+    const { shuffleSequence } = store.getState().mainReducer;
+    if (shuffleSequence.length < 1) return;
+    shuffleSequence.map((letter: string) => rubiks.rotate(letter));
+  });
 
-  createBtn(btnOption1, UIManager, rubiks);
+  const btn2 = createBtn({
+    ...BUTTON_OPTIONS,
+    text: "RESOLV",
+    width: '70px', height: '40px',
+    top: `${-360 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
+  });
+  btn2.onPointerClickObservable.add(() => {
+    console.log('resolv');
+    resolver();
+  });
 
+  const btn3 = createBtn({
+    ...BUTTON_OPTIONS,
+    text: "print cubies state",
+    width: '70px', height: '40px',
+    top: `${-320 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
+  });
+  btn3.onPointerClickObservable.add(() => {
+    console.log("CUBIES STATE")
+    // rubiks.cubies[7].currentPos.x += 3;
+    // rubiks.cubies[14].currentPos.x += 3;
+    // rubiks.cubies[16].currentPos.x += 3;
+    // rubiks.cubies[24].currentPos.x += 3;
+    rubiks.cubies[7].print()
+    // console.log(rubiks.cubies);
+  });
+
+  BUTTONS.map(btn => UIManager.addControl(btn))
 
 };
