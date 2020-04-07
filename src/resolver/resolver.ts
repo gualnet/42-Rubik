@@ -1,4 +1,5 @@
 
+import _ from 'lodash';
 /**
  * Kociemba's Two Phase Algorithm
  */
@@ -37,6 +38,22 @@ const Edges = {
   [RUBIK.BR]: {e: RUBIK.BR, o: 0},
 }
 
+
+/* ********** ********** ********** ********** ********** **********
+ *? ******* *
+ *? HELPERS *
+ *? ******* *
+ */
+// create a cube ate the cubie level
+const createCubieCube = () => {
+  const cube = {
+    corners: _.cloneDeep(Corners) ,
+    edges: _.cloneDeep(Edges),
+  };
+
+  // console.log("CREATE CUBIE CUBE", cube);
+  return cube;
+};
 const isGreaterThan= (element: RUBIK, refElement: RUBIK) => {
   // HELPER
   const edgeTab = [RUBIK.UR, RUBIK.UF, RUBIK.UL, RUBIK.UB, RUBIK.DR,RUBIK.DF, RUBIK.DL, RUBIK.DB, RUBIK.FR, RUBIK.FL, RUBIK.BL, RUBIK.BR];
@@ -54,6 +71,12 @@ const binomial = (n:number, k:number): number => {
  return coeff;
 };
 
+
+/* ********** ********** ********** ********** **********
+ *? *********************** *
+ *? COORDINATES CALCULATORS *
+ *? *********************** *
+ */
 const UDSliceCoordinate = () => {
   const occupied = new Array(11).fill(false);
 
@@ -97,6 +120,15 @@ const cornerOrientationCoordinate = () => {
   }
   return result;
 };
+/**
+ * Corners orientation inverter
+ */
+const cornerInvertOrientationCoordinate = (x: number) => {
+  let corners;
+  let parrity = 0;
+
+
+};
 
 /**
  * Edges orientation is described by a number from 0 to 2047 (2^11-1)
@@ -116,12 +148,39 @@ const edgeOrientationCoordinate = () => {
 };
 
 
+/* ********** ********** ********** ********** **********
+ *? ********************** *
+ *? MOVE TABLES GENERATORS *
+ *? ********************** *
+ */
+// CreateTwistMoveTable - for raw-coordinates
+const genTwistMoveTable = () => {
+  console.log("\ngenTwistMoveTable")
+  const moveTable = [];
+  const cornerMaxCoord = 2186 // 3^7-1 for the corners
+  const cube = createCubieCube();
 
+  for (let i = 0; i < cornerMaxCoord; i++) {
+
+  }
+
+
+  console.log("genTwistMoveTable END\n\n\n")
+
+};
+
+
+/* ********** ********** ********** ********** **********
+ *? ******** *
+ *? RESOLVER *
+ *? ******** *
+ */
 const resolver = async () => {
   // console.log("Corners", Corners);
-  cornerOrientationCoordinate();
-  edgeOrientationCoordinate();
-  UDSliceCoordinate();
+  // cornerOrientationCoordinate();
+  // edgeOrientationCoordinate();
+  // UDSliceCoordinate();
+  genTwistMoveTable();
 
   return true;
 };

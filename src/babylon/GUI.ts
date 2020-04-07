@@ -2,7 +2,7 @@ import * as GUI from '@babylonjs/gui';
 
 import store from '../store';
 import Rubiks from '../Rubiks';
-import resolver from '../resolver';
+import resolver from '../resolver/resolver';
 // import Cubie from '../Cubie';
 
 const BUTTON_OPTIONS = {
