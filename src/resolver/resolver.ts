@@ -1,4 +1,4 @@
-
+import CubieCube from './CubieCube';
 
 /**
  * Kociemba's Two Phase Algorithm
@@ -15,7 +15,7 @@ const resolver = async () => {
   // cornerOrientationCoordinate();
   // edgeOrientationCoordinate();
   // UDSliceCoordinate();
-  genTwistMoveTable();
+  // genTwistMoveTable();
 
   return true;
 };

@@ -34,6 +34,7 @@ interface IEdges {
   [EDGES.BL]: IEdge,
   [EDGES.BR]: IEdge,
 }
+
 class CubieCube {
   corners: ICorners;
   edges: IEdges;
@@ -93,7 +94,7 @@ const createCubieCube = () => {
   // console.log("CREATE CUBIE CUBE", cube);
   return cube;
 };
-const edgeIsGreaterThan= (element: Edges, refElement: Edges) => {
+const edgeIsGreaterThan= (element: EDGES, refElement: EDGES) => {
   // HELPER
   const edgesTab = [EDGES.UR, EDGES.UF, EDGES.UL, EDGES.UB, EDGES.DR,EDGES.DF, EDGES.DL, EDGES.DB, EDGES.FR, EDGES.FL, EDGES.BL, EDGES.BR];
   // const cornersTab = [CORNERS.URF, CORNERS.ULF, CORNERS.ULB, CORNERS.UBR, CORNERS.DFR, CORNERS.DLF, CORNERS.DBL, CORNERS.DRB];
@@ -124,7 +125,7 @@ const UDSliceCoordinate = () => {
   // Populate accupied tab
   let i = 0;
   for (let edge of Object.values(Edges)) {
-    occupied[i] = isGreaterThan(edge.e, EDGES.FR);
+    occupied[i] = edgeIsGreaterThan(edge.e, EDGES.FR);
     i++;
   };
 
@@ -210,7 +211,4 @@ const genTwistMoveTable = () => {
 
 };
 
-export default {
-  createCubieCube,
-
-}
+export default CubieCube;
