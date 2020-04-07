@@ -15,10 +15,9 @@ const BUTTON_OPTIONS = {
   fontSize: 12,
 }
 
-const BUTTONS: Array<GUI.Button> = [];
-
-const createBtn = (btnOptions: any): GUI.Button => {
+const createBtn = (btnOptions: any, UIManager: GUI.AdvancedDynamicTexture, rubiks: Rubiks): void => {
   const button = GUI.Button.CreateImageButton(btnOptions.name, btnOptions.text, "");
+
   button.width = btnOptions.width;
   button.height = btnOptions.height;
   button.top = btnOptions.top;
@@ -26,54 +25,29 @@ const createBtn = (btnOptions: any): GUI.Button => {
   button.color = btnOptions.color;
   button.background = btnOptions.background;
   button.children[0].fontSize = btnOptions.fontSize;
-  BUTTONS.push(button);
-  return button;
+
+  // Func to be executed when we press on the button
+  button.onPointerClickObservable.add(() => {
+    const { shuffleSequence } = store.getState().mainReducer;
+    if (shuffleSequence.length < 1) return;
+    shuffleSequence.map((letter: string) => rubiks.rotate(letter));
+  });
+
+  UIManager.addControl(button);
 };
 
 export const initGUI = (scene: any, rubiks: Rubiks) => {
 
   const UIManager = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
 
-  // Button1
-  const btn1 = createBtn({
+  const btnOption1 = {
     ...BUTTON_OPTIONS,
     text: "apply sequence",
     width: '70px', height: '40px',
     top: `${-400 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
-  });
-  btn1.onPointerClickObservable.add(() => {
-    const { shuffleSequence } = store.getState().mainReducer;
-    if (shuffleSequence.length < 1) return;
-    shuffleSequence.map((letter: string) => rubiks.rotate(letter));
-  });
+  };
 
-  const btn2 = createBtn({
-    ...BUTTON_OPTIONS,
-    text: "RESOLV",
-    width: '70px', height: '40px',
-    top: `${-360 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
-  });
-  btn2.onPointerClickObservable.add(() => {
-    console.log('resolv');
-    resolver();
-  });
+  createBtn(btnOption1, UIManager, rubiks);
 
-  const btn3 = createBtn({
-    ...BUTTON_OPTIONS,
-    text: "print cubies state",
-    width: '70px', height: '40px',
-    top: `${-320 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
-  });
-  btn3.onPointerClickObservable.add(() => {
-    console.log("CUBIES STATE")
-    // rubiks.cubies[7].currentPos.x += 3;
-    // rubiks.cubies[14].currentPos.x += 3;
-    // rubiks.cubies[16].currentPos.x += 3;
-    // rubiks.cubies[24].currentPos.x += 3;
-    rubiks.cubies[7].print()
-    // console.log(rubiks.cubies);
-  });
-
-  BUTTONS.map(btn => UIManager.addControl(btn))
 
 };
