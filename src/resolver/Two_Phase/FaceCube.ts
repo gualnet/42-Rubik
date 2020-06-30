@@ -1,9 +1,10 @@
-import { EColors } from './enums';
+import { EColors, ECorners, EEdges } from './enums';
+import * as Enums from './enums'
 import CubieCube from './CubieCube';
 
-/**
- * Cube on a Facelet Level
- */
+/***************************
+ * Cube on a Facelet Level *
+ ***************************/
 
 export default class FaceletCube {
   facelets: Array<EColors>;
@@ -45,9 +46,9 @@ export default class FaceletCube {
     if (this.facelets.length !== 54) throw Error('Error constructing facelet representation')
   }
 
-  /**
+  /***********
    * toString
-   */
+   ***********/
   toString = () => {
     const array: string[] = [];
     
@@ -78,14 +79,29 @@ export default class FaceletCube {
     return(array.join(''));
   }
 
-  /**
+  /**************
    * toCubieCube
-   */
+   **************/
   toCubieCube = () => {
     let orientation;
     const cubieCube = new CubieCube();
 
+    // Invalidate corners & Edges
+    for (let i = 0; i < Enums.CornersNb; i++) {
+      cubieCube.cornersPermutation[i] = ECorners.URF;
+    }
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      cubieCube.edgesPermutation[i] = EEdges.UR;
+    }
+    // ***
+
+    let color1, color2: EColors;
+    Enums.CornersArr.map(corner => {
+      // ! wop
+    })
     
+
+
 
 
   }

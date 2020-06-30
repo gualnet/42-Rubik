@@ -29,12 +29,18 @@ const Edges: IEdges = {
 };
 
 class CubieCube {
-  corners: ICorners;
-  edges: IEdges;
+  cornersPermutation: Array<ECorners>;
+  edgesPermutation: Array<EEdges>;
+  cornersOrientation: [];
+  edgesOrientation: [];
 
   constructor(corners?: ICorners, edges?: IEdges) {
-    this.corners = corners ? corners : _.cloneDeep(Corners);
-    this.edges = edges ? edges : _.cloneDeep(Edges);
+    const initCornerPermutation = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
+    const initEdgesPermutation = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+    this.cornersPermutation = _.cloneDeep(initCornerPermutation);
+    this.edgesPermutation = _.cloneDeep(initEdgesPermutation);
+    this.cornersOrientation = [];
+    this.edgesOrientation = [];
   }
 };
 
