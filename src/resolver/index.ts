@@ -1,4 +1,5 @@
-import twoPhases from './Two_Phase/resolver'
+import twoPhases from './Two_Phase/resolver';
+
 const resolver = {
   twoPhases,
 }
