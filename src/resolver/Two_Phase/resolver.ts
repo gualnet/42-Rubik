@@ -14,7 +14,7 @@ import CubieCube from './CubieCube';
  */
 const resolver = () => {
   console.log("TWO_PHASES")
-
+  const CUBIE = new CubieCube()
 
   return true;
 };

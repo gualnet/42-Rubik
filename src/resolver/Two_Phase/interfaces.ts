@@ -1,34 +1,34 @@
-import { Corners as CORNERS, Edges as EDGES } from './enums';
+import { ECorners, EEdges } from './enums';
 
 export interface ICorner {
-  c: CORNERS, // current corner/place
+  c: ECorners, // current corner/place
   o: number,  // current orientation  0-3
 }
 export interface IEdge {
-  e: EDGES, // current edge/place
+  e: EEdges, // current edge/place
   o: number, // current orientation 0-2
 }
 export interface ICorners {
-  [CORNERS.URF]: ICorner,
-  [CORNERS.ULF]: ICorner,
-  [CORNERS.ULB]: ICorner,
-  [CORNERS.UBR]: ICorner,
-  [CORNERS.DFR]: ICorner,
-  [CORNERS.DLF]: ICorner,
-  [CORNERS.DBL]: ICorner,
-  [CORNERS.DRB]: ICorner,
+  [ECorners.URF]: ICorner,
+  [ECorners.ULF]: ICorner,
+  [ECorners.ULB]: ICorner,
+  [ECorners.UBR]: ICorner,
+  [ECorners.DFR]: ICorner,
+  [ECorners.DLF]: ICorner,
+  [ECorners.DBL]: ICorner,
+  [ECorners.DRB]: ICorner,
 }
 export interface IEdges {
-  [EDGES.UR]: IEdge,
-  [EDGES.UF]: IEdge,
-  [EDGES.UL]: IEdge,
-  [EDGES.UB]: IEdge,
-  [EDGES.DR]: IEdge,
-  [EDGES.DF]: IEdge,
-  [EDGES.DL]: IEdge,
-  [EDGES.DB]: IEdge,
-  [EDGES.FR]: IEdge,
-  [EDGES.FL]: IEdge,
-  [EDGES.BL]: IEdge,
-  [EDGES.BR]: IEdge,
+  [EEdges.UR]: IEdge,
+  [EEdges.UF]: IEdge,
+  [EEdges.UL]: IEdge,
+  [EEdges.UB]: IEdge,
+  [EEdges.DR]: IEdge,
+  [EEdges.DF]: IEdge,
+  [EEdges.DL]: IEdge,
+  [EEdges.DB]: IEdge,
+  [EEdges.FR]: IEdge,
+  [EEdges.FL]: IEdge,
+  [EEdges.BL]: IEdge,
+  [EEdges.BR]: IEdge,
 }
