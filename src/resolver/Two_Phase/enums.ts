@@ -66,5 +66,7 @@ export const FaceletsArr = [
 export const FaceletsNb = 54;
 
 export enum EColors { U='U', R='R', F='F', D='D', L='L', B='B' };
+
+// export enum EColors { U, R, F, D, L, B };
 export const ColorsArr = ['U', 'R', 'F', 'D', 'L', 'B'];
 export const ColorsNb = 6;

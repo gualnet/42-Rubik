@@ -1,4 +1,4 @@
-import { EColors, ECorners, EEdges } from './enums';
+import { EColors, ECorners, EEdges, EFacelets } from './enums';
 import * as Enums from './enums'
 import CubieCube from './CubieCube';
 
@@ -7,16 +7,20 @@ import CubieCube from './CubieCube';
  ***************************/
 
 export default class FaceletCube {
-  facelets: Array<EColors>;
   faceletsStr: string; // string representation of the facelets
+  facelets: Array<EColors>;
+  cornerFacelet: Array<Array<EFacelets>>;
+  cornerColor: Array<Array<EColors>>;
 
   constructor(cubeString?: string) {
+    // Value of faceletsStr
     if (typeof(cubeString) === 'string' && cubeString.length === 54) {
       this.faceletsStr = cubeString;
     } else {
       this.faceletsStr = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB';
     }
 
+    // Value of facelets
     this.facelets = [];
     for (const letter of this.faceletsStr) {
       switch (letter) {
@@ -44,12 +48,24 @@ export default class FaceletCube {
     }
 
     if (this.facelets.length !== 54) throw Error('Error constructing facelet representation')
+
+    // Value of cornerFacelet
+    this.cornerFacelet = [
+      [ EFacelets.U9, EFacelets.R1, EFacelets.F3 ], [ EFacelets.U7, EFacelets.F1, EFacelets.L3 ], [ EFacelets.U1, EFacelets.L1, EFacelets.B3 ], [ EFacelets.U3, EFacelets.B1, EFacelets.R3 ],
+      [ EFacelets.D3, EFacelets.F9, EFacelets.R7 ], [ EFacelets.D1, EFacelets.L9, EFacelets.F7 ], [ EFacelets.D7, EFacelets.B9, EFacelets.L7 ], [ EFacelets.D9, EFacelets.R9, EFacelets.B7 ],
+    ];
+    // Value of cornerColor
+    this.cornerColor = [
+      [ EColors.U, EColors.R, EColors.F ], [ EColors.U, EColors.F, EColors.L ], [ EColors.U, EColors.L, EColors.B ], [ EColors.U, EColors.B, EColors.R ],
+      [ EColors.D, EColors.F, EColors.R ], [ EColors.D, EColors.L, EColors.F ], [ EColors.D, EColors.B, EColors.L ], [ EColors.D, EColors.R, EColors.B ],
+    ]
+
   }
 
   /***********
    * toString
    ***********/
-  toString = () => {
+  toString: Function = () => {
     const array: string[] = [];
     
     this.facelets.map(elem => {
@@ -95,10 +111,25 @@ export default class FaceletCube {
     }
     // ***
 
-    let color1, color2: EColors;
-    Enums.CornersArr.map(corner => {
-      // ! wop
-    })
+    // 
+    let color1: EColors, color2: EColors;
+    Enums.CornersArr.map((value, idx) => {
+      for (let orientation = 0; orientation < 3; orientation++) {
+
+        const cornerFaceletPlace = this.cornerFacelet[idx][orientation]
+        const  faceletColor = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace)]
+        if (faceletColor === EColors.U || faceletColor === EColors.D) break;
+
+        const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3]
+        const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3]
+        color1 = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace1)]
+        color2 = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace)]
+
+        Enums.CornersArr.map((value, idx) => {
+          if (color1 === )
+        });
+      }
+    });
     
 
 
