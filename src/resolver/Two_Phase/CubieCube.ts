@@ -31,8 +31,8 @@ const Edges: IEdges = {
 class CubieCube {
   cornersPosition: Array<ECorners>;
   edgesPosition: Array<EEdges>;
-  cornersOrientation: [];
-  edgesOrientation: [];
+  cornersOrientation: Array<number>;
+  edgesOrientation: Array<number>;
 
   constructor(corners?: ICorners, edges?: IEdges) {
     const initCornerPosition = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
