@@ -29,16 +29,16 @@ const Edges: IEdges = {
 };
 
 class CubieCube {
-  cornersPermutation: Array<ECorners>;
-  edgesPermutation: Array<EEdges>;
+  cornersPosition: Array<ECorners>;
+  edgesPosition: Array<EEdges>;
   cornersOrientation: [];
   edgesOrientation: [];
 
   constructor(corners?: ICorners, edges?: IEdges) {
-    const initCornerPermutation = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
-    const initEdgesPermutation = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
-    this.cornersPermutation = _.cloneDeep(initCornerPermutation);
-    this.edgesPermutation = _.cloneDeep(initEdgesPermutation);
+    const initCornerPosition = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
+    const initEdgesPosition = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+    this.cornersPosition = _.cloneDeep(initCornerPosition);
+    this.edgesPosition = _.cloneDeep(initEdgesPosition);
     this.cornersOrientation = [];
     this.edgesOrientation = [];
   }

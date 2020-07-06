@@ -104,10 +104,10 @@ export default class FaceletCube {
 
     // Invalidate corners & Edges
     for (let i = 0; i < Enums.CornersNb; i++) {
-      cubieCube.cornersPermutation[i] = ECorners.URF;
+      cubieCube.cornersPosition[i] = ECorners.URF;
     }
     for (let i = 0; i < Enums.EdgesNb; i++) {
-      cubieCube.edgesPermutation[i] = EEdges.UR;
+      cubieCube.edgesPosition[i] = EEdges.UR;
     }
     // ***
 
@@ -115,18 +115,28 @@ export default class FaceletCube {
     let color1: EColors, color2: EColors;
     Enums.CornersArr.map((value, idx) => {
       for (let orientation = 0; orientation < 3; orientation++) {
-
+        
         const cornerFaceletPlace = this.cornerFacelet[idx][orientation]
-        const  faceletColor = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace)]
+        const faceletColor = this.facelets[cornerFaceletPlace]
+        // console.log("faceletColor>>", faceletColor, EColors[faceletColor])
         if (faceletColor === EColors.U || faceletColor === EColors.D) break;
 
         const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3]
         const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3]
-        color1 = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace1)]
-        color2 = this.facelets[Enums.FaceletsArr.indexOf(cornerFaceletPlace)]
+        color1 = this.facelets[cornerFaceletPlace1]
+        color2 = this.facelets[cornerFaceletPlace2]
 
-        Enums.CornersArr.map((value, idx) => {
-          if (color1 === )
+        Enums.CornersArr.map((value, idx2) => {
+          const x = cubieCube.cornersPosition[idx]
+          const y = ECorners[2]
+          const z = ECorners.ULB
+          // const test = x ===  ECorners[2]
+          // console.log('X', x,'Y', y, 'Z', z)
+          // console.log('-->', ECorners['ULB'])
+          if (this.cornerColor[idx2][1] === color1 && this.cornerColor[idx2][2] === color2) {
+
+          }
+          // if (color1 === )
         });
       }
     });
