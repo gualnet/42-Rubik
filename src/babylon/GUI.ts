@@ -54,8 +54,8 @@ export const initGUI = (scene: any, rubiks: Rubiks) => {
     top: `${-360 + 40 / 2}px`, left: `${-400 + 100 / 2}px`,
   });
   btn2.onPointerClickObservable.add(() => {
-    console.log('resolv');
-    resolver();
+    console.log('resolv-me');
+    // resolver.twoPhases();
   });
 
   const btn3 = createBtn({
