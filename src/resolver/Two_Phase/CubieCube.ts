@@ -1,7 +1,9 @@
 import _ from 'lodash';
 
-import { ECorners, EEdges, EFacelets } from './enums';
+import FaceletCube from './FaceCube';
+import { EColors, ECorners, EEdges, EFacelets } from './enums';
 import { ICorner, ICorners, IEdge, IEdges } from './interfaces';
+import * as Enums from './enums'
 
 const Corners: ICorners = {
   [ECorners.URF]: {c: ECorners.URF, o: 0},
@@ -34,14 +36,45 @@ class CubieCube {
   cornersOrientation: Array<number>;
   edgesOrientation: Array<number>;
 
-  constructor(corners?: ICorners, edges?: IEdges) {
+  constructor(cornersPos?: Array<ECorners>, cornersOri?: Array<number>, edgesPos?: Array<EEdges>, edgesOri?: Array<number>) {
     const initCornerPosition = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
     const initEdgesPosition = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
-    this.cornersPosition = _.cloneDeep(initCornerPosition);
-    this.edgesPosition = _.cloneDeep(initEdgesPosition);
-    this.cornersOrientation = [];
-    this.edgesOrientation = [];
+    
+    this.cornersPosition = cornersPos ? cornersPos : _.cloneDeep(initCornerPosition)
+    this.cornersOrientation = cornersOri ? cornersOri : [];
+    
+    this.edgesPosition = edgesPos ? edgesPos : _.cloneDeep(initEdgesPosition);
+    this.edgesOrientation = edgesOri? edgesOri : [];
   }
+
+  /*****************
+   * toFaceletCube *
+   *****************/
+  /**
+   * Return a facelet representation of the cube
+   */
+  toFaceletCube: Function = () => {
+    console.log('Call cubieCube.toFaceletCube()')
+    const faceCube = new FaceletCube();
+    
+    Enums.CornersArr.map((value, idx) => {
+      const idx2 = this.cornersPosition[idx];
+      const orientation = this.cornersOrientation[idx];
+      for (let n = 0; n < 3; n++) {
+        faceCube.facelets[faceCube.cornerFacelet[idx][(n + orientation) % 3]] = faceCube.cornerColor[idx2][n];
+      }
+    });
+    Enums.EdgesArr.map((value, idx) => {
+      const idx2 = this.edgesPosition[idx];
+      const orientation = this.edgesOrientation[idx];
+      for (let n = 0; n < 2; n++) {
+        faceCube.facelets[faceCube.edgeFacelet[idx][(n + orientation) % 2]] = faceCube.edgeColor[idx2][n];
+      }
+    });
+    return faceCube;
+  };
+
+  
 };
 
 
@@ -54,16 +87,7 @@ class CubieCube {
  *? HELPERS *
  *? ******* *
  */
-// create a cube at cubie level
-const createCubieCube = () => {
-  const cube = {
-    corners: _.cloneDeep(Corners),
-    edges: _.cloneDeep(Edges),
-  };
 
-  // console.log("CREATE CUBIE CUBE", cube);
-  return cube;
-};
 const edgeIsGreaterThan= (element: EEdges, refElement: EEdges) => {
   // HELPER
   const edgesTab = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR,EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
