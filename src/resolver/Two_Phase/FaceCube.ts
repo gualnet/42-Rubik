@@ -114,10 +114,10 @@ export default class FaceletCube {
 
     // Invalidate corners & Edges
     for (let i = 0; i < Enums.CornersNb; i++) {
-      cubieCube.cornersPosition[i] = ECorners.URF;
+      cubieCube.cornersPermutation[i] = ECorners.URF;
     }
     for (let i = 0; i < Enums.EdgesNb; i++) {
-      cubieCube.edgesPosition[i] = EEdges.UR;
+      cubieCube.edgesPermutation[i] = EEdges.UR;
     }
     // ***
 
@@ -140,7 +140,7 @@ export default class FaceletCube {
         Enums.CornersArr.map((value, idx2) => {
           // get the color of the corner [idx2]
           if (this.cornerColor[idx2][1] === color1 && this.cornerColor[idx2][2] === color2) {
-            cubieCube.cornersPosition[idx] = idx2;
+            cubieCube.cornersPermutation[idx] = idx2;
             cubieCube.cornersOrientation[idx] = orientation % 3;
             return;
           }
@@ -154,12 +154,12 @@ export default class FaceletCube {
         let edgeFaceletColor2 = this.facelets[this.edgeFacelet[idx][1]];
         //if edge Facelet color === edge Color
         if (edgeFaceletColor === this.edgeColor[idx2][0] && edgeFaceletColor2 === this.edgeColor[idx2][1]) {
-          cubieCube.edgesPosition[idx] = idx2;
+          cubieCube.edgesPermutation[idx] = idx2;
           cubieCube.edgesOrientation[idx] = 0;
           return;
         }
         if (edgeFaceletColor === this.edgeColor[idx2][1] && edgeFaceletColor2 === this.edgeColor[idx2][0]) {
-          cubieCube.edgesPosition[idx] = idx2;
+          cubieCube.edgesPermutation[idx] = idx2;
           cubieCube.edgesOrientation[idx] = 1;
           return;
         }

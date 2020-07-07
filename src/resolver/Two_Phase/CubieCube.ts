@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
 import FaceletCube from './FaceCube';
-import basicMoves from './basicMoves';
-import { EColors, ECorners, EEdges, EFacelets } from './enums';
-import { ICorner, ICorners, IEdge, IEdges } from './interfaces';
+// import basicMoves from './basicMoves';
+import { ECorners, EEdges } from './enums';
+import { ICorners, IEdges } from './interfaces';
 import * as Enums from './enums';
 
 const Corners: ICorners = {
@@ -32,19 +32,19 @@ const Edges: IEdges = {
 };
 
 class CubieCube {
-  cornersPosition: Array<ECorners>;
-  edgesPosition: Array<EEdges>;
+  cornersPermutation: Array<ECorners>;
+  edgesPermutation: Array<EEdges>;
   cornersOrientation: Array<number>;
   edgesOrientation: Array<number>;
 
   constructor(cornersPos?: Array<ECorners>, cornersOri?: Array<number>, edgesPos?: Array<EEdges>, edgesOri?: Array<number>) {
     const initCornerPosition = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB];
-    const initEdgesPosition = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+    const initedgesPermutation = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
     
-    this.cornersPosition = cornersPos ? cornersPos : _.cloneDeep(initCornerPosition)
+    this.cornersPermutation = cornersPos ? cornersPos : _.cloneDeep(initCornerPosition)
     this.cornersOrientation = cornersOri ? cornersOri : [];
     
-    this.edgesPosition = edgesPos ? edgesPos : _.cloneDeep(initEdgesPosition);
+    this.edgesPermutation = edgesPos ? edgesPos : _.cloneDeep(initedgesPermutation);
     this.edgesOrientation = edgesOri? edgesOri : [];
   }
 
@@ -56,14 +56,14 @@ class CubieCube {
     const faceCube = new FaceletCube();
     
     Enums.CornersArr.map((value, idx) => {
-      const idx2 = this.cornersPosition[idx];
+      const idx2 = this.cornersPermutation[idx];
       const orientation = this.cornersOrientation[idx];
       for (let n = 0; n < 3; n++) {
         faceCube.facelets[faceCube.cornerFacelet[idx][(n + orientation) % 3]] = faceCube.cornerColor[idx2][n];
       }
     });
     Enums.EdgesArr.map((value, idx) => {
-      const idx2 = this.edgesPosition[idx];
+      const idx2 = this.edgesPermutation[idx];
       const orientation = this.edgesOrientation[idx];
       for (let n = 0; n < 2; n++) {
         faceCube.facelets[faceCube.edgeFacelet[idx][(n + orientation) % 2]] = faceCube.edgeColor[idx2][n];
@@ -81,7 +81,7 @@ class CubieCube {
     const cornerPermutation: Array<ECorners> = [];
     const cornerOrientation: Array<number> = [];
     Enums.CornersArr.map((value, idx) => {
-      cornerPermutation[idx] = this.cornersPosition[cubieB.cornersPosition[idx]];
+      cornerPermutation[idx] = this.cornersPermutation[cubieB.cornersPermutation[idx]];
 
       const orientationA = this.cornersOrientation[cubieB.cornersOrientation[idx]];
       const orientationB = cubieB.cornersOrientation[idx];
@@ -103,7 +103,7 @@ class CubieCube {
       cornerOrientation[idx] = orientation;
     });
     Enums.CornersArr.map((val, idx) => {
-      this.cornersPosition[idx] = cornerPermutation[idx];
+      this.cornersPermutation[idx] = cornerPermutation[idx];
       this.cornersOrientation[idx] = cornerOrientation[idx];
     });
   };
@@ -117,15 +117,54 @@ class CubieCube {
     const edgeOrientation: Array<number> = [];
 
     Enums.EdgesArr.map((val, idx) => {
-      edgePermutation[idx] = this.edgesPosition[cubieB.edgesPosition[idx]];
-      edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPosition[idx]]) % 2;
+      edgePermutation[idx] = this.edgesPermutation[cubieB.edgesPermutation[idx]];
+      edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPermutation[idx]]) % 2;
     });
 
     Enums.EdgesArr.map((val, idx) => {
-      this.edgesPosition[idx] = edgePermutation[idx];
+      this.edgesPermutation[idx] = edgePermutation[idx];
       this.edgesOrientation[idx] = edgeOrientation[idx];
     });
   };
+
+  /**
+   * Multiply this CubieCube with the provided CubieCube
+   * @param cubieB 
+   */
+  multiply: Function = (cubieB: CubieCube) => {
+    this.cornerMultiply(cubieB);
+    this.edgeMultiply(cubieB);
+  };
+
+  /**
+   * Give the parity of the corner Permutation
+   */
+  cornerParity: Function = () => {
+    let s = 0;
+    for (let i = ECorners.DRB; i > ECorners.URF; i--) {
+      for (let j = i - 1; j >= ECorners.URF; j--) {
+        if (this.cornersPermutation[j] > this.cornersPermutation[i]){
+          s++;
+        }
+      }
+    }
+    s = s % 2;
+    return s;
+  };
+
+  edgeParity: Function = () => {
+    let s = 0;
+    for (let i = EEdges.BR; i > EEdges.UR; i--) {
+      for (let j = i - 1; j >= EEdges.UR; j--) {
+        if (this.edgesPermutation[j] > this.edgesPermutation[i]) {
+          s++;
+        }
+      }
+    }
+    s = s % 2;
+    return s;
+  };
+
 
 };
 

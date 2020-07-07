@@ -17,12 +17,9 @@ const resolver = () => {
   console.log("TWO_PHASES")
   const cubie = new CubieCube()
   // console.log('->', cubie);
+  cubie.cornerParity();
 
 
-  console.log('FaceletCube')
-  const faceletCube = new FaceletCube()
-  // console.log('->', faceletCube);
-  faceletCube.toCubieCube()
 
 
 
