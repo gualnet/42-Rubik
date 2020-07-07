@@ -17,7 +17,6 @@ const resolver = () => {
   console.log("TWO_PHASES")
   const cubie = new CubieCube()
   // console.log('->', cubie);
-  cubie.cornerParity();
 
 
 

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { range, flip } from 'lodash';
 
 import FaceletCube from './FaceCube';
 // import basicMoves from './basicMoves';
@@ -137,7 +137,35 @@ class CubieCube {
   };
 
   /**
-   * Give the parity of the corner Permutation
+   * Compute the inverse of the cubie cube
+   * @param d 
+   */
+  invCubieCube: Function = (d: CubieCube) => {
+    for (let i of range(Enums.EdgesArr.length)) {
+      d.edgesPermutation[this.edgesPermutation[i]] = i;
+    }
+    for (let i of range(Enums.EdgesArr.length)) {
+      d.edgesOrientation[i] = this.edgesOrientation[d.edgesPermutation[i]];
+    }
+
+    for (let i of range(Enums.CornersArr.length)) {
+      d.cornersPermutation[this.cornersPermutation[i]] = i;
+    }
+    for (let i of range(Enums.CornersArr.length)) {
+      let orientation = this.cornersOrientation[d.cornersPermutation[i]];
+      if (orientation >= 3) {
+        d.cornersOrientation[i] = orientation
+      } else {
+        d.cornersOrientation[i] = -orientation
+        if (d.cornersOrientation[i] < 0) {
+          d.cornersOrientation[i] += 3;
+        }
+      }
+    }
+  };
+
+  /**
+   * Give the parity of the corners Permutation
    */
   cornerParity: Function = () => {
     let s = 0;
@@ -152,6 +180,9 @@ class CubieCube {
     return s;
   };
 
+  /**
+   * Give the parity of the edges Permutation
+   */
   edgeParity: Function = () => {
     let s = 0;
     for (let i = EEdges.BR; i > EEdges.UR; i--) {
@@ -163,6 +194,64 @@ class CubieCube {
     }
     s = s % 2;
     return s;
+  };
+
+  //      ***************************
+  // ***** Coordinates GETER & SETER *****
+  //      ***************************
+
+  /*********
+   * TWIST *
+   *********/
+  /**
+   * Return the twist number of the 8 corner
+   * @return 0 <= twist <= 3^7 - 1
+   */
+  getTwist: Function = () => {
+    let twist = 0;
+    for (let i = ECorners.URF; i < ECorners.DRB; i++) {
+      twist = 3 * twist + this.cornersOrientation[i];
+    }
+    return twist;
+  };
+
+  /**
+   * 
+   * @param twist {number} 0 <= twist <= 3^7 - 1
+   */
+  setTwist: Function = (twist: number) => {
+    let twistParity = 0;
+    for (let i = ECorners.DRB; i > ECorners.URF; i--) {
+      this.cornersOrientation[i] = twist % 3;
+      twistParity += this.cornersOrientation[i];
+      twist = Math.floor(twist / 3);
+    }
+    this.cornersOrientation[ECorners.DRB] = (3 - twistParity % 3) % 3;
+  };
+
+  /********
+   * FLIP *
+   ********/
+
+  /**
+   * Return the flip number of the 12 edges
+   * @return 0 <= flip <= 2^11 - 1
+   */
+  getFlip: Function = () => {
+    let flip = 0;
+    for (let i = EEdges.UR; i < EEdges.BR; i++) {
+      flip = 2 * flip + this.edgesOrientation[i];
+    }
+    return flip;
+  };
+  setFlip: Function = (flip: number) => {
+    let flipParity = 0;
+    for (let i = EEdges.BR; i > EEdges.UR; i--) {
+      this.edgesOrientation[i] = flip % 2;
+      flipParity += this.edgesOrientation[i];
+      flip = Math.floor(flip / 2);
+    }
+    this.edgesOrientation[EEdges.BR] = (2 - flipParity % 2) % 2;
   };
 
 
