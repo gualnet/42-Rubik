@@ -73,18 +73,18 @@ class CubieCube {
   };
 
   /**
-   * Multiply this cubie cube corners with another cubie cube (cb)
-   * @param cb {CubieCube} cubie cube to multiply
+   * Multiply this cubie cube corners with another cubie cube (cubieB)
+   * @param cubieB {CubieCube} cubie cube to multiply
    */
-  cornerMultiply: Function = (cb: CubieCube) => {
+  cornerMultiply: Function = (cubieB: CubieCube) => {
     
     const cornerPermutation: Array<ECorners> = [];
     const cornerOrientation: Array<number> = [];
     Enums.CornersArr.map((value, idx) => {
-      cornerPermutation[idx] = this.cornersPosition[cb.cornersPosition[idx]];
+      cornerPermutation[idx] = this.cornersPosition[cubieB.cornersPosition[idx]];
 
-      const orientationA = this.cornersOrientation[cb.cornersOrientation[idx]];
-      const orientationB = cb.cornersOrientation[idx];
+      const orientationA = this.cornersOrientation[cubieB.cornersOrientation[idx]];
+      const orientationB = cubieB.cornersOrientation[idx];
       let orientation = 0;
 
       if (orientationA < 3 && orientationB < 3) { // two regular cubes
@@ -105,6 +105,25 @@ class CubieCube {
     Enums.CornersArr.map((val, idx) => {
       this.cornersPosition[idx] = cornerPermutation[idx];
       this.cornersOrientation[idx] = cornerOrientation[idx];
+    });
+  };
+
+  /**
+   * Multiply this cubie cube edges with another cubie cube (cubieB)
+   * @param cubieB
+   */
+  edgeMultiply: Function = (cubieB: CubieCube) => {
+    const edgePermutation: Array<EEdges> = [];
+    const edgeOrientation: Array<number> = [];
+
+    Enums.EdgesArr.map((val, idx) => {
+      edgePermutation[idx] = this.edgesPosition[cubieB.edgesPosition[idx]];
+      edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPosition[idx]]) % 2;
+    });
+
+    Enums.EdgesArr.map((val, idx) => {
+      this.edgesPosition[idx] = edgePermutation[idx];
+      this.edgesOrientation[idx] = edgeOrientation[idx];
     });
   };
 
