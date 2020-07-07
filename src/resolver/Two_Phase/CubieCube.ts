@@ -1,9 +1,10 @@
 import _ from 'lodash';
 
 import FaceletCube from './FaceCube';
+import basicMoves from './basicMoves';
 import { EColors, ECorners, EEdges, EFacelets } from './enums';
 import { ICorner, ICorners, IEdge, IEdges } from './interfaces';
-import * as Enums from './enums'
+import * as Enums from './enums';
 
 const Corners: ICorners = {
   [ECorners.URF]: {c: ECorners.URF, o: 0},
@@ -48,11 +49,8 @@ class CubieCube {
   }
 
   /*****************
-   * toFaceletCube *
-   *****************/
-  /**
    * Return a facelet representation of the cube
-   */
+   *****************/
   toFaceletCube: Function = () => {
     console.log('Call cubieCube.toFaceletCube()')
     const faceCube = new FaceletCube();
@@ -74,7 +72,42 @@ class CubieCube {
     return faceCube;
   };
 
-  
+  /**
+   * Multiply this cubie cube corners with another cubie cube (cb)
+   * @param cb {CubieCube} cubie cube to multiply
+   */
+  cornerMultiply: Function = (cb: CubieCube) => {
+    
+    const cornerPermutation: Array<ECorners> = [];
+    const cornerOrientation: Array<number> = [];
+    Enums.CornersArr.map((value, idx) => {
+      cornerPermutation[idx] = this.cornersPosition[cb.cornersPosition[idx]];
+
+      const orientationA = this.cornersOrientation[cb.cornersOrientation[idx]];
+      const orientationB = cb.cornersOrientation[idx];
+      let orientation = 0;
+
+      if (orientationA < 3 && orientationB < 3) { // two regular cubes
+        let sum = orientationA + orientationB;
+        orientation = (sum >= 3) ? sum - 3 : sum;
+      } else if (orientationA < 3 && orientationB >= 3) { // cube b is in a mirrored state
+        let sum = orientationA + orientationB;
+        orientation = (sum >= 6) ? sum - 3 : sum; // composition of both is also in a mirrored state
+      } else if (orientationA >= 3 && orientationB < 3) { // cube a is in a mirrored state
+        let sub = orientationA - orientationB;
+        orientation = (sub < 3) ? sub + 3 : sub; // composition of both is a mirrored cube
+      } else if (orientationA >= 3 && orientationB >= 3) { // both cube are in mirrored state
+        let sub = orientationA - orientationB;
+        orientation = (sub < 0) ? sub + 3 : sub; // composition is a regular one.
+      }
+      cornerOrientation[idx] = orientation;
+    });
+    Enums.CornersArr.map((val, idx) => {
+      this.cornersPosition[idx] = cornerPermutation[idx];
+      this.cornersOrientation[idx] = cornerOrientation[idx];
+    });
+  };
+
 };
 
 
@@ -194,7 +227,7 @@ const genTwistMoveTable = () => {
   console.log("\ngenTwistMoveTable")
   const moveTable = [];
   const cornerMaxCoord = 2186 // 3^7-1 for the corners
-  const cube = createCubieCube();
+  // const cube = createCubieCube();
 
   for (let i = 0; i < cornerMaxCoord; i++) {
 
