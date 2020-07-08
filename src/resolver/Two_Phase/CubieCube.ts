@@ -1,10 +1,12 @@
-import _, { range, flip } from 'lodash';
+import _, { join } from 'lodash';
 
+import { Cnk } from './services'
 import FaceletCube from './FaceCube';
 // import basicMoves from './basicMoves';
 import { ECorners, EEdges } from './enums';
 import { ICorners, IEdges } from './interfaces';
 import * as Enums from './enums';
+import { Slider } from '@babylonjs/gui';
 
 const Corners: ICorners = {
   [ECorners.URF]: {c: ECorners.URF, o: 0},
@@ -141,17 +143,17 @@ class CubieCube {
    * @param d 
    */
   invCubieCube: Function = (d: CubieCube) => {
-    for (let i of range(Enums.EdgesArr.length)) {
+    for (let i of _.range(Enums.EdgesArr.length)) {
       d.edgesPermutation[this.edgesPermutation[i]] = i;
     }
-    for (let i of range(Enums.EdgesArr.length)) {
+    for (let i of _.range(Enums.EdgesArr.length)) {
       d.edgesOrientation[i] = this.edgesOrientation[d.edgesPermutation[i]];
     }
 
-    for (let i of range(Enums.CornersArr.length)) {
+    for (let i of _.range(Enums.CornersArr.length)) {
       d.cornersPermutation[this.cornersPermutation[i]] = i;
     }
-    for (let i of range(Enums.CornersArr.length)) {
+    for (let i of _.range(Enums.CornersArr.length)) {
       let orientation = this.cornersOrientation[d.cornersPermutation[i]];
       if (orientation >= 3) {
         d.cornersOrientation[i] = orientation
@@ -197,7 +199,7 @@ class CubieCube {
   };
 
   //      ***************************
-  // ***** Coordinates GETER & SETER *****
+  // ***** Coordinates GETTER & SETTER *****
   //      ***************************
 
   /*********
@@ -244,6 +246,7 @@ class CubieCube {
     }
     return flip;
   };
+
   setFlip: Function = (flip: number) => {
     let flipParity = 0;
     for (let i = EEdges.BR; i > EEdges.UR; i--) {
@@ -254,6 +257,54 @@ class CubieCube {
     this.edgesOrientation[EEdges.BR] = (2 - flipParity % 2) % 2;
   };
 
+  /*********
+   * SLICE *
+   *********/
+  /**
+   * Get the location of the UD-slice edges FR,FL,BL and BR ignoring their permutation.
+   * 0 <= slice < 495 in phase 1, slice = 0 in phase 2.
+   */
+  getSlice: Function = () => {
+    let a = 0;
+    let x = 0;
+
+    for (let i = EEdges.FR; i <= EEdges.BR; i++) {
+      console.log("i", i)
+      if (EEdges.FR <= this.edgesPermutation[i] && this.edgesPermutation[i] <= EEdges.BR) {
+        a += Cnk(11 - i, x + 1);
+        x += 1
+      }
+    }
+    return a;
+  };
+
+  setSlice: Function = (index: number) => {
+    const sliceEdge = [ EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR ];
+    const otherEdge = [ EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB ];
+    let a = index;
+
+    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+      // invalidate all adges position
+      this.edgesPermutation[i] = -1;
+    }
+    
+    let x = 4;
+    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+      if (a - Cnk(11 - i, x) >= 0) {
+        this.edgesPermutation[i] = sliceEdge[4 - x];
+        a -= Cnk(11 - i, x);
+        x -= 1;
+      }
+    }
+    x = 0;
+    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+      if (this.edgesPermutation[i] === -1) {
+        this.edgesPermutation[i] = otherEdge[x];
+        x += 1;
+      }
+    }
+
+  }
 
 };
 
@@ -278,14 +329,15 @@ const edgeIsGreaterThan= (element: EEdges, refElement: EEdges) => {
   if (edgesTab.indexOf(element) >= edgesTab.indexOf(refElement)) return true;
   return false;
 };
-const binomial = (n:number, k:number): number => {
-  // HELPER
-  let coeff = 1;
-  for (let x = n-k+1; x <= n; x++) coeff *= x;
-  for (let x = 1; x <= k; x++) coeff /= x;
-  console.log("binomial", n, k, coeff);
- return coeff;
-};
+
+// const binomial = (n:number, k:number): number => {
+//   // HELPER
+//   let coeff = 1;
+//   for (let x = n-k+1; x <= n; x++) coeff *= x;
+//   for (let x = 1; x <= k; x++) coeff /= x;
+//   console.log("binomial", n, k, coeff);
+//  return coeff;
+// };
 
 
 /* ********** ********** ********** ********** **********
