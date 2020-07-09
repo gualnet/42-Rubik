@@ -1,7 +1,6 @@
 import CubieCube from './CubieCube';
 import FaceletCube from './FaceCube';
 
-import * as services from './services';
 /**
  * Kociemba's Two Phase Algorithm
  * Phase 1 - Solve the cube into a certain state

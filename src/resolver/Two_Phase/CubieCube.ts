@@ -311,7 +311,7 @@ class CubieCube {
 
   /****************
    * SLICE SORTED * (phase 2)
-   * Here the number 24 = 4! (Factorial 4 - 1*2*3*4)
+   * Here the number 24 => 4! => 1*2*3*4 => Factorial 4
    ****************/
   /**
    * Get the permutation and location of the UD-slice edges FR,FL,BL and BR.
@@ -349,7 +349,8 @@ class CubieCube {
     let sliceEdge = [EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
     let otherEdge = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB];
     let permutation = index % 24;
-    const location = Math.floor(index / 24);
+    let location = Math.floor(index / 24);
+    let x: number;
 
     // invalidate edge permutation
     for (let i = 0; i < Enums.EdgesNb; i++) {
@@ -358,152 +359,113 @@ class CubieCube {
     // generate permutation from index b
     for (let i  = 1; i < 4; i++) {
       let k = permutation % (i + 1);
-      permutation = Math.floor(i + 1);
+      permutation = Math.floor(permutation / (i + 1));
       while (k > 0) {
         sliceEdge = rotateRight(sliceEdge, 0, i);
         k -= 1;
       }
     }
     // set slice edges
-    let x = 4;
+    x = 4;
+    for (let i = 0; Enums.EdgesNb; i++) {
+      if ((location - Cnk(11 - i, x)) >= 0) {
+        this.edgesPermutation[i] = sliceEdge[4 - x];
+        location -= Cnk(11 - i, x);
+        x--;
+      }
+    }
+    // set the remaining edges
+    x = 0;
     for (let i = 0; i < Enums.EdgesNb; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
-        x += 1;
+        x++;
       }
     }
 
   };
 
-};
+  /************
+   * UP EDGES *
+   ************/
+  /**
+   * Get the permutation & location of the up slice edges (UR - UF - UL - UB)
+   * 0 <= upEdges < 11880 in phase 1.
+   * 0 <= upEdges < 1680 in phase 2.
+   * upEdges = 1656 for solved cube.
+   */
+  getUpEdges: Function = () => {
+    let a = 0;
+    let x = 0;
+    let edge4 = [];
+    let edgesPermutationMod = [...this.edgesPermutation];
 
-
-
-
-//------------------------------------------------------------------------
-
-/* ********** ********** ********** ********** ********** **********
- *? ******* *
- *? HELPERS *
- *? ******* *
- */
-
-const edgeIsGreaterThan= (element: EEdges, refElement: EEdges) => {
-  // HELPER
-  const edgesTab = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR,EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
-  // const cornersTab = [CORNERS.URF, CORNERS.ULF, CORNERS.ULB, CORNERS.UBR, CORNERS.DFR, CORNERS.DLF, CORNERS.DBL, CORNERS.DRB];
-
-  // const tab = edgesTab.includes(refElement) ? edgesTab : cornersTab;
-
-  if (edgesTab.indexOf(element) >= edgesTab.indexOf(refElement)) return true;
-  return false;
-};
-
-// const binomial = (n:number, k:number): number => {
-//   // HELPER
-//   let coeff = 1;
-//   for (let x = n-k+1; x <= n; x++) coeff *= x;
-//   for (let x = 1; x <= k; x++) coeff /= x;
-//   console.log("binomial", n, k, coeff);
-//  return coeff;
-// };
-
-
-/* ********** ********** ********** ********** **********
- *? *********************** *
- *? COORDINATES CALCULATORS *
- *? *********************** *
- */
-const UDSliceCoordinate = () => {
-  const occupied = new Array(11).fill(false);
-
-  // Populate accupied tab
-  let i = 0;
-  for (let edge of Object.values(Edges)) {
-    occupied[i] = edgeIsGreaterThan(edge.e, EEdges.FR);
-    i++;
+    for (let i = 0; i < 4; i++) {
+      edgesPermutationMod = rotateRight(edgesPermutationMod, 0 , 11);
+    }
+    // Compute the index a < (12 choose 4) and the permutation array
+    for (let i = EEdges.BR; i >= EEdges.UR; i--) {
+      if (EEdges.UR <= edgesPermutationMod[i] && edgesPermutationMod[i] <= EEdges.UB) {
+        a += Cnk(11 - i, x + 1);
+        edge4[3 - x] = edgesPermutationMod[i];
+        x++;
+      }
+    }
+    // Then compute the index b < 4! for the permutation in edge4
+    let b = 0;
+    for (let i = 3; i > 0; i--) {
+      let k = 0;
+      while (edge4[i] !== i) {
+        edge4 = rotateLeft(edge4, 0, i);
+        k++;
+      }
+      b = (i + 1) * b + k;
+    }
+    return (24 * a + b);
   };
 
-  // 
-  let result = 0;
-  let k = 3;
-  let n = 11;
-  while (k >= 0 && n >= 0) {
-    console.log("\n", n, k);
-    if (occupied[n]) {
-      k--;
-    } else {
-      // result = result + binomial(n, k)
+  setUpEdges: Function = (index: number) => {
+    let sliceEdge = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB];
+    let otherEdge = [EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
+    let permutation = index % 4;
+    let location = Math.floor(index / 24);
+    let x: number;
+
+    // Invalidate current edges permutation
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      this.edgesPermutation[i] = -1;
     }
-    n--
-  }
-  return result;
-};
-
-/**
- * Corners orientation is described by a number from 0 to 2186 (3^7-1)
- */
-const cornerOrientationCoordinate = () => {
-  let pow = 6; // number of 
-  let result = 0;
-  const values: number[] = [];
-  // console.log(Object.values(Corners));
-  Object.values(Corners).map(value => values.push(value.o));
-  values.pop(); // we don't need the last value
-
-  for (let val of values) {
-    result += val*3**pow;
-    pow--;
-  }
-  return result;
-};
-/**
- * Corners orientation inverter
- */
-const cornerInvertOrientationCoordinate = (x: number) => {
-  let corners;
-  let parrity = 0;
-
-
-};
-
-/**
- * Edges orientation is described by a number from 0 to 2047 (2^11-1)
- */
-const edgeOrientationCoordinate = () => {
-  let pow = 10;
-  let result = 0;
-  let values: number[] = [];
-
-  Object.values(Edges).map(value => values.push(value.o));
-  values.pop();
-  for (let val of values) {
-    result += val*2**pow;
-    pow--;
-  }
-  return result;
-};
-
-
-/* ********** ********** ********** ********** **********
- *? ********************** *
- *? MOVE TABLES GENERATORS *
- *? ********************** *
- */
-// CreateTwistMoveTable - for raw-coordinates
-const genTwistMoveTable = () => {
-  console.log("\ngenTwistMoveTable")
-  const moveTable = [];
-  const cornerMaxCoord = 2186 // 3^7-1 for the corners
-  // const cube = createCubieCube();
-
-  for (let i = 0; i < cornerMaxCoord; i++) {
-
-  }
-
-
-  console.log("genTwistMoveTable END\n\n\n")
+    // Generate permutation from index b
+    for (let i = 1; i < 4; i++) {
+      let k = permutation % (i + 1);
+      permutation = Math.floor(permutation / (i + 1));
+      while (k > 0) {
+        sliceEdge = rotateRight(sliceEdge, 0, i);
+        k--;
+      }
+    }
+    // Set slice edges
+    x = 4;
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (location - Cnk(11 - i, x) >= 0) {
+        this.edgesPermutation[i] = sliceEdge[4 - x];
+        location -= Cnk(11 - i, x);
+        x--;
+      }
+    }
+    // Set the remaining edges
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (this.edgesPermutation[i] === -1) {
+        this.edgesPermutation[i] = otherEdge[x];
+        x++;
+      }
+    }
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      this.edgesPermutation = rotateLeft(this.edgesPermutation, 0, 11);
+    }
+  };
 
 };
+
 
 export default CubieCube;
