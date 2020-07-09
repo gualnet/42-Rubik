@@ -1,4 +1,4 @@
-import _, { join } from 'lodash';
+import _, { join, isEmpty } from 'lodash';
 
 import { Cnk, rotateLeft, rotateRight } from './services'
 import FaceletCube from './FaceCube';
@@ -284,10 +284,7 @@ class CubieCube {
     const otherEdge = [ EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB ];
     let a = index;
 
-    for (let i = 0; i < Enums.EdgesNb; i++) {
-      // invalidate all adges position
-      this.edgesPermutation[i] = -1;
-    }
+    this.invalidateEdgesPermutation();
     
     // set slice edges
     let x = 4;
@@ -352,10 +349,8 @@ class CubieCube {
     let location = Math.floor(index / 24);
     let x: number;
 
-    // invalidate edge permutation
-    for (let i = 0; i < Enums.EdgesNb; i++) {
-      this.edgesPermutation[i] = -1;
-    }
+    this.invalidateEdgesPermutation();
+
     // generate permutation from index b
     for (let i  = 1; i < 4; i++) {
       let k = permutation % (i + 1);
@@ -431,10 +426,8 @@ class CubieCube {
     let location = Math.floor(index / 24);
     let x: number;
 
-    // Invalidate current edges permutation
-    for (let i = 0; i < Enums.EdgesNb; i++) {
-      this.edgesPermutation[i] = -1;
-    }
+    this.invalidateEdgesPermutation();
+
     // Generate permutation from index b
     for (let i = 1; i < 4; i++) {
       let k = permutation % (i + 1);
@@ -465,6 +458,93 @@ class CubieCube {
     }
   };
 
+  /**************
+   * DOWN EDGES *
+   **************/
+  /**
+   * Get the permutation and location of the edges (DR - DF - DL - DB)
+   * 0 <= downEdges < 11880 in phase 1
+   * 0 <= downEdges < 1680 in phase 2
+   * downEdges = 0 for solved cube.
+   */
+  getDownEdges: Function = () => {
+    let a = 0;
+    let x = 0;
+    let edge4 = [];
+    let edgesPermutationMod = [...this.edgesPermutation];
+
+    for (let i = 0; i < 4; i++) {
+      edgesPermutationMod = rotateRight(edgesPermutationMod, 0, 11);
+    }
+    // Compute the index a < (12 choose 4) and the permutation array perm.
+    for (let i = EEdges.BR; i <= EEdges.UR; i--) {
+      if (EEdges.DR <= edgesPermutationMod[i] && edgesPermutationMod[i] <= EEdges.DB) {
+        a += Cnk(11 - i, x + 1);
+        edge4[3 - x] = edgesPermutationMod[i];
+        x++;
+      }
+    }
+    // Compute the index b < 4! for the permutation in edge4
+    let b = 0;
+    for (let i = 3; i > 0; i--) {
+      let k = 0;
+      while (edge4[i] !== i + 4) {
+        edge4 = rotateLeft(edge4, 0, i);
+        k++;
+      }
+      b = (i + 1) * b + k
+    }
+    return (24 * a + b);
+  };
+  setDownEdges: Function = (index: number) => {
+    let sliceEdge = [EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB];
+    let otherEdge = [EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR, EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB];
+    let permutation = index % 4;
+    let location = Math.floor(index / 24);
+    let x: number;
+    this.invalidateEdgesPermutation();
+
+    // Generate permutation from index b
+    for (let i = 1; i < 4; i++) {
+      let k = permutation % (i + 1);
+      permutation = Math.floor(permutation / (i + 1));
+      while (k > 0) {
+        sliceEdge = rotateRight(sliceEdge, 0, i);
+        k--;
+      }
+    }
+    // Set slice edges
+    x = 4;
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (location - Cnk(11 - i, x) >= 0) {
+        this.edgesPermutation[i] = sliceEdge[4 - x];
+        location -= Cnk(11 - i, x);
+        x--;
+      }
+    }
+    // Set the remaining edges
+    x = 0;
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (this.edgesPermutation[i] === -1) {
+        this.edgesPermutation[i] = otherEdge[x];
+        x++;
+      }
+    }
+    for (let i = 0; i < 4; i++) {
+      this.edgesPermutation = rotateLeft(this.edgesPermutation, 0, 11);
+    }
+
+  };
+
+
+  /**
+   * ==============
+   * Private func *
+   * ==============
+   */
+  private invalidateEdgesPermutation: Function = () => {
+    this.edgesPermutation = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+  }
 };
 
 
