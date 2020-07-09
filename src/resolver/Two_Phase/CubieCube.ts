@@ -533,19 +533,91 @@ class CubieCube {
     for (let i = 0; i < 4; i++) {
       this.edgesPermutation = rotateLeft(this.edgesPermutation, 0, 11);
     }
-
   };
+
+  /************
+   * UD EDGES *
+  *************/
+ /**
+  * Get the permutation of the 8 U and D edges.
+  * UDEdges undefined in phase 1.
+  * 0 <= UDEdges < 40320 in phase 2.
+  * UDEdges = 0 for solved cube.
+  */
+  getUDEdges: Function = () => {
+    let permutation = this.edgesPermutation.slice(0, 8);
+    let b = 0;
+    let k: number;
+    for (let i = EEdges.DB; i < EEdges.UR; i--) {
+      k = 0;
+      while (permutation[i] !== i) {
+        permutation = rotateLeft(permutation, 0, i);
+        k++;
+      }
+      b = (i + 1) * b + k
+    }
+    return b;
+  };
+  setUDEdges: Function = (index: number) => {
+    for (let i = 0; i < 8; i++) {
+      this.edgesPermutation[i] = i;
+    }
+    let k: number;
+    for (let i = 0; i < 8; i++) {
+      k = index % (i + 1);
+      index = Math.floor(index / (i + 1));
+      while (k > 0) {
+        this.edgesPermutation = rotateRight(this.edgesPermutation, 0, i);
+        k--;
+      }
+    }
+  };
+
+  /**
+   * Check if the cube is in a valid state
+   */
+  isValid: Function = () => {
+    let edgeCount = _.fill(new Array(12), 0);
+    let s = 0;
+
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      edgeCount[this.edgesPermutation[i]] += 1
+    }
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (edgeCount[i] != 1)
+        return 'Error: Some edges are undefined.';
+    }
+
+    s = 0;
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      s += this.edgesPermutation[i];
+    }
+    if ((s % 2) != 0) {
+      return 'Error: Total edge flip is wrong.';
+    }
+
+    s = 0;
+    for (let i = 0; i < Enums.CornersNb; i++) {
+      s += this.cornersOrientation[i];
+    }
+    if ((s % 3) != 0)
+      return 'Error: Total corner twist is wrong.';
+
+    if (this.edgeParity() !== this.cornerParity())
+      return 'Error: Wrong edge and corner parity'
+    
+    return 'CUBE VALIDATION: OK'
+  }
 
 
   /**
-   * ==============
-   * Private func *
-   * ==============
+   * =========
+   * Private *
+   * =========
    */
   private invalidateEdgesPermutation: Function = () => {
     this.edgesPermutation = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
   }
 };
-
 
 export default CubieCube;
