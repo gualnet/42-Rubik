@@ -1,12 +1,13 @@
 import _, { join } from 'lodash';
 
-import { Cnk } from './services'
+import { Cnk, rotateLeft, rotateRight } from './services'
 import FaceletCube from './FaceCube';
 // import basicMoves from './basicMoves';
 import { ECorners, EEdges } from './enums';
 import { ICorners, IEdges } from './interfaces';
 import * as Enums from './enums';
 import { Slider } from '@babylonjs/gui';
+import { Rotate2dBlock } from '@babylonjs/core';
 
 const Corners: ICorners = {
   [ECorners.URF]: {c: ECorners.URF, o: 0},
@@ -143,10 +144,10 @@ class CubieCube {
    * @param d 
    */
   invCubieCube: Function = (d: CubieCube) => {
-    for (let i of _.range(Enums.EdgesArr.length)) {
+    for (let i of _.range(Enums.EdgesNb)) {
       d.edgesPermutation[this.edgesPermutation[i]] = i;
     }
-    for (let i of _.range(Enums.EdgesArr.length)) {
+    for (let i of _.range(Enums.EdgesNb)) {
       d.edgesOrientation[i] = this.edgesOrientation[d.edgesPermutation[i]];
     }
 
@@ -283,28 +284,96 @@ class CubieCube {
     const otherEdge = [ EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB ];
     let a = index;
 
-    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+    for (let i = 0; i < Enums.EdgesNb; i++) {
       // invalidate all adges position
       this.edgesPermutation[i] = -1;
     }
     
+    // set slice edges
     let x = 4;
-    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+    for (let i = 0; i < Enums.EdgesNb; i++) {
       if (a - Cnk(11 - i, x) >= 0) {
         this.edgesPermutation[i] = sliceEdge[4 - x];
         a -= Cnk(11 - i, x);
         x -= 1;
       }
     }
+
+    // then set the reamaining (other) edges
     x = 0;
-    for (let i = 0; i < Enums.EdgesArr.length; i++) {
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      if (this.edgesPermutation[i] === -1) {
+        this.edgesPermutation[i] = otherEdge[x];
+        x += 1;
+      }
+    }
+  }
+
+  /****************
+   * SLICE SORTED * (phase 2)
+   * Here the number 24 = 4! (Factorial 4 - 1*2*3*4)
+   ****************/
+  /**
+   * Get the permutation and location of the UD-slice edges FR,FL,BL and BR.
+   * 0 <= sliceSorted < 11880 in phase 1.
+   * 0 <= sliceSorted < 24 in phase 2.
+   * sliceSorted = 0 for a solved cube.
+   */
+  getSliceSorted: Function = () => {
+    let a = 0;
+    let x = 0;
+    let edge4 = [];
+    
+    // Compute the index a < (12 choose 4)
+    for (let i = EEdges.BR; i >= EEdges.UR; i--) {
+      if (EEdges.FR <= this.edgesPermutation[i] && this.edgesPermutation[i] <= EEdges.BR) {
+        a += Cnk(11 - i, x + 1);
+        edge4[3 - x] = this.edgesPermutation[i];
+        x += 1;
+      }
+    }
+    // Then compute the index b < 4! for the edge4 permutation
+    let b = 0;
+    for (let i = 3; i > 0; i--) {
+      let k = 0;
+      while (edge4[i] !== (i + 8)) {
+        edge4 = rotateLeft(edge4, 0, i);
+        k += 1;
+      }
+      b = (i + 1) * b + k;
+    }
+    return (24 * a + b);
+  };
+
+  setSliceSorted: Function = (index: number) => {
+    let sliceEdge = [EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
+    let otherEdge = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB];
+    let permutation = index % 24;
+    const location = Math.floor(index / 24);
+
+    // invalidate edge permutation
+    for (let i = 0; i < Enums.EdgesNb; i++) {
+      this.edgesPermutation[i] = -1;
+    }
+    // generate permutation from index b
+    for (let i  = 1; i < 4; i++) {
+      let k = permutation % (i + 1);
+      permutation = Math.floor(i + 1);
+      while (k > 0) {
+        sliceEdge = rotateRight(sliceEdge, 0, i);
+        k -= 1;
+      }
+    }
+    // set slice edges
+    let x = 4;
+    for (let i = 0; i < Enums.EdgesNb; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
         x += 1;
       }
     }
 
-  }
+  };
 
 };
 
@@ -364,7 +433,7 @@ const UDSliceCoordinate = () => {
     if (occupied[n]) {
       k--;
     } else {
-      result = result + binomial(n, k)
+      // result = result + binomial(n, k)
     }
     n--
   }
