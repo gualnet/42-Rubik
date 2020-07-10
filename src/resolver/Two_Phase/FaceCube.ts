@@ -76,7 +76,7 @@ export default class FaceletCube {
   /***********
    * toString
    ***********/
-  toString: Function = () => {
+  toString = () => {
     const array: string[] = [];
     for (let elem of this.facelets) {
       switch (elem) {
@@ -103,11 +103,56 @@ export default class FaceletCube {
       }
     }
     return(array.join(''));
-  }
+  };
 
-  /**************
-   * toCubieCube
-   **************/
+  /**
+   * Construct a facelet cube from a string.
+   * 
+   */
+  fromString = (str: string) => {
+    console.log(str)
+    if (str.length !== 54) throw new Error('[ERROR] FaceCube: invalide string length')
+
+    const counter = _.fill(new Array(6), 0);
+    for (let i = 0; i < 54; i++) {
+      switch (str[i]) {
+        case 'U':
+          this.facelets[i] += 1;
+          counter[EColors.U] += 1;
+          break;
+        case 'R':
+          this.facelets[i] += 1;
+          counter[EColors.R] += 1;
+            break;
+        case 'F':
+          this.facelets[i] += 1;
+          counter[EColors.F] += 1;
+          break;
+        case 'D':
+          this.facelets[i] += 1;
+          counter[EColors.D] += 1;
+          break;
+        case 'L':
+          this.facelets[i] += 1;
+          counter[EColors.L] += 1;
+            break;
+        case 'B':
+          this.facelets[i] += 1;
+          counter[EColors.B] += 1;
+          break;
+        default:
+          break;
+      }
+    }
+    for (let elem of counter) {
+      if (elem !== 9) throw new Error('[Error] FaceCube: Cube definition from string failed')
+    }
+    return true;
+  };
+
+  /**
+   * Return a cubie representation of the facelet cube
+   */
   toCubieCube = () => {
     const cubieCube = new CubieCube();
 
