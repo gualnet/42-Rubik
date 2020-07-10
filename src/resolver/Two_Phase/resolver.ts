@@ -15,8 +15,11 @@ import FaceletCube from './FaceCube';
  */
 const resolver = () => {
   console.log("TWO_PHASES")
-  const cubie = new CubieCube()
+  // const cubie = new CubieCube()
   // console.log('->', cubie);
+  const face = new FaceletCube();
+  const str = face.toString()
+  console.log("STR", str)
 
   return true;
 };

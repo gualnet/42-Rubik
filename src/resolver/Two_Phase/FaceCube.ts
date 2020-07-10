@@ -1,6 +1,7 @@
-import { EColors, ECorners, EEdges, EFacelets } from './enums';
+import _ from 'lodash';
 import * as Enums from './enums'
 import CubieCube from './CubieCube';
+import { EColors, EFacelets } from './enums';
 
 /***************************
  * Cube on a Facelet Level *
@@ -77,8 +78,7 @@ export default class FaceletCube {
    ***********/
   toString: Function = () => {
     const array: string[] = [];
-    
-    this.facelets.map(elem => {
+    for (let elem of this.facelets) {
       switch (elem) {
         case EColors.U:
           array.push('U')
@@ -101,7 +101,7 @@ export default class FaceletCube {
         default:
           break;
       }
-    });
+    }
     return(array.join(''));
   }
 
@@ -109,22 +109,17 @@ export default class FaceletCube {
    * toCubieCube
    **************/
   toCubieCube = () => {
-    let orientation;
     const cubieCube = new CubieCube();
 
     // Invalidate corners & Edges
-    for (let i = 0; i < Enums.CornersNb; i++) {
-      cubieCube.cornersPermutation[i] = ECorners.URF;
-    }
-    for (let i = 0; i < Enums.EdgesNb; i++) {
-      cubieCube.edgesPermutation[i] = EEdges.UR;
-    }
+    cubieCube.cornersPermutation = _.fill(new Array(Enums.CornersNb), -1);
+    cubieCube.edgesPermutation = _.fill(new Array(Enums.EdgesNb), -1);
     // ***
 
     // 
     let color1: EColors, color2: EColors;
     // Corners
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       for (let orientation = 0; orientation < 3; orientation++) {
 
         const cornerFaceletPlace = this.cornerFacelet[idx][orientation];
@@ -132,24 +127,24 @@ export default class FaceletCube {
 
         if (faceletColor === EColors.U || faceletColor === EColors.D) break;
 
-        const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3]
-        const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3]
+        const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3];
+        const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3];
         color1 = this.facelets[cornerFaceletPlace1];
         color2 = this.facelets[cornerFaceletPlace2];
 
-        Enums.CornersArr.map((value, idx2) => {
+        for (let idx2 = 0; idx2 < Enums.CornersNb; idx2++) {
           // get the color of the corner [idx2]
           if (this.cornerColor[idx2][1] === color1 && this.cornerColor[idx2][2] === color2) {
             cubieCube.cornersPermutation[idx] = idx2;
             cubieCube.cornersOrientation[idx] = orientation % 3;
             return;
           }
-        });
+        };
       }
-    });
+    };
     // Edges
-    Enums.EdgesArr.map((value, idx) => {
-      Enums.EdgesArr.map((value, idx2) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
+      for (let idx2 = 0; idx2 < Enums.EdgesNb; idx2++) {
         let edgeFaceletColor = this.facelets[this.edgeFacelet[idx][0]];
         let edgeFaceletColor2 = this.facelets[this.edgeFacelet[idx][1]];
         //if edge Facelet color === edge Color
@@ -163,8 +158,8 @@ export default class FaceletCube {
           cubieCube.edgesOrientation[idx] = 1;
           return;
         }
-      });
-    });
+      };
+    };
   }
 
 }

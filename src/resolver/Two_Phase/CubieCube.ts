@@ -1,38 +1,9 @@
-import _, { join, isEmpty } from 'lodash';
+import _ from 'lodash';
 
 import { Cnk, rotateLeft, rotateRight } from './services'
 import FaceletCube from './FaceCube';
-// import basicMoves from './basicMoves';
 import { ECorners, EEdges } from './enums';
-import { ICorners, IEdges } from './interfaces';
 import * as Enums from './enums';
-import { Slider } from '@babylonjs/gui';
-import { Rotate2dBlock } from '@babylonjs/core';
-
-const Corners: ICorners = {
-  [ECorners.URF]: {c: ECorners.URF, o: 0},
-  [ECorners.ULF]: {c: ECorners.ULF, o: 0},
-  [ECorners.ULB]: {c: ECorners.ULB, o: 0},
-  [ECorners.UBR]: {c: ECorners.UBR, o: 0}, 
-  [ECorners.DFR]: {c: ECorners.DFR, o: 0},
-  [ECorners.DLF]: {c: ECorners.DLF, o: 0},
-  [ECorners.DBL]: {c: ECorners.DBL, o: 0},
-  [ECorners.DRB]: {c: ECorners.DRB, o: 0},
-};
-const Edges: IEdges = {
-  [EEdges.UR]: {e: EEdges.UR, o: 0},
-  [EEdges.UF]: {e: EEdges.UF, o: 0},
-  [EEdges.UL]: {e: EEdges.UL, o: 0},
-  [EEdges.UB]: {e: EEdges.UB, o: 0},
-  [EEdges.DR]: {e: EEdges.DR, o: 0},
-  [EEdges.DF]: {e: EEdges.DF, o: 0},
-  [EEdges.DL]: {e: EEdges.DL, o: 0},
-  [EEdges.DB]: {e: EEdges.DB, o: 0},
-  [EEdges.FR]: {e: EEdges.FR, o: 0},
-  [EEdges.FL]: {e: EEdges.FL, o: 0},
-  [EEdges.BL]: {e: EEdges.BL, o: 0},
-  [EEdges.BR]: {e: EEdges.BR, o: 0},
-};
 
 class CubieCube {
   cornersPermutation: Array<ECorners>;
@@ -58,20 +29,20 @@ class CubieCube {
     console.log('Call cubieCube.toFaceletCube()')
     const faceCube = new FaceletCube();
     
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       const idx2 = this.cornersPermutation[idx];
       const orientation = this.cornersOrientation[idx];
       for (let n = 0; n < 3; n++) {
         faceCube.facelets[faceCube.cornerFacelet[idx][(n + orientation) % 3]] = faceCube.cornerColor[idx2][n];
       }
-    });
-    Enums.EdgesArr.map((value, idx) => {
+    };
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       const idx2 = this.edgesPermutation[idx];
       const orientation = this.edgesOrientation[idx];
       for (let n = 0; n < 2; n++) {
         faceCube.facelets[faceCube.edgeFacelet[idx][(n + orientation) % 2]] = faceCube.edgeColor[idx2][n];
       }
-    });
+    };
     return faceCube;
   };
 
@@ -83,7 +54,7 @@ class CubieCube {
     
     const cornerPermutation: Array<ECorners> = [];
     const cornerOrientation: Array<number> = [];
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       cornerPermutation[idx] = this.cornersPermutation[cubieB.cornersPermutation[idx]];
 
       const orientationA = this.cornersOrientation[cubieB.cornersOrientation[idx]];
@@ -104,11 +75,11 @@ class CubieCube {
         orientation = (sub < 0) ? sub + 3 : sub; // composition is a regular one.
       }
       cornerOrientation[idx] = orientation;
-    });
-    Enums.CornersArr.map((val, idx) => {
+    };
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       this.cornersPermutation[idx] = cornerPermutation[idx];
       this.cornersOrientation[idx] = cornerOrientation[idx];
-    });
+    };
   };
 
   /**
@@ -119,15 +90,15 @@ class CubieCube {
     const edgePermutation: Array<EEdges> = [];
     const edgeOrientation: Array<number> = [];
 
-    Enums.EdgesArr.map((val, idx) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       edgePermutation[idx] = this.edgesPermutation[cubieB.edgesPermutation[idx]];
       edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPermutation[idx]]) % 2;
-    });
+    };
 
-    Enums.EdgesArr.map((val, idx) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       this.edgesPermutation[idx] = edgePermutation[idx];
       this.edgesOrientation[idx] = edgeOrientation[idx];
-    });
+    };
   };
 
   /**
@@ -584,7 +555,7 @@ class CubieCube {
       edgeCount[this.edgesPermutation[i]] += 1
     }
     for (let i = 0; i < Enums.EdgesNb; i++) {
-      if (edgeCount[i] != 1)
+      if (edgeCount[i] !== 1)
         return 'Error: Some edges are undefined.';
     }
 
@@ -592,7 +563,7 @@ class CubieCube {
     for (let i = 0; i < Enums.EdgesNb; i++) {
       s += this.edgesPermutation[i];
     }
-    if ((s % 2) != 0) {
+    if ((s % 2) !== 0) {
       return 'Error: Total edge flip is wrong.';
     }
 
@@ -600,7 +571,7 @@ class CubieCube {
     for (let i = 0; i < Enums.CornersNb; i++) {
       s += this.cornersOrientation[i];
     }
-    if ((s % 3) != 0)
+    if ((s % 3) !== 0)
       return 'Error: Total corner twist is wrong.';
 
     if (this.edgeParity() !== this.cornerParity())
