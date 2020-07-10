@@ -50,7 +50,7 @@ export default class FaceletCube {
       }
     }
 
-    if (this.facelets.length !== 54) throw Error('Error constructing facelet representation')
+    if (this.facelets.length !== 54) throw Error('[Error] FaceCube: constructing facelet representation')
 
     // Value of cornerFacelet
     this.cornerFacelet = [

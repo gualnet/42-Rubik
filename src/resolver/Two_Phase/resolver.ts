@@ -7,20 +7,47 @@ import FaceletCube from './FaceCube';
  * Phase 2: Solve the rest of the cube
  */
 
-
-/* ********** ********** ********** ********** **********
- *? ******** *
- *? RESOLVER *
- *? ******** *
+/**
+ * 
+ * @param cubeStr 
+ * @param maxMoves 
+ * @param timeout 
  */
-const resolver = () => {
-  console.log("TWO_PHASES")
-  // const cubie = new CubieCube()
-  // console.log('->', cubie);
-  const face = new FaceletCube();
-  const str = face.toString()
-  console.log("STR", str)
+const resolver = (cubeStr: string, maxMoves = 20, timeout = 3) => {
+  console.log("TWO_PHASES_SOLVER");
+  console.log(`PARAMS \nMAX MOVES:${maxMoves} \nTIME OUT:${timeout}`);
+  
+  const cubieCube = new CubieCube();
+  const cc = new CubieCube();
+  cc.cornersPermutation = [0, 1, 2, 3, 4, 5, 6, 7]
+  cubieCube.isEqual(cc)
+  cc.cornersPermutation = [0, 0, 0, 0, 0, 0, 0, 0];
+  cubieCube.isEqual(cc)
 
+  return;
+  // ********************
+  try {
+    cubeStr = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB'
+    // cubeStr = 'DUUBULDBFRBFRRULLLBRDFFFBLURDBFDFDRFRULBLUFDURRBLBDUDL'
+    if (!cubeStr || cubeStr.length !== 54) {
+      throw new Error('[ERROR] Resolver: invalide cube description string')
+    }
+  
+    const faceCube = new FaceletCube();
+    faceCube.fromString(cubeStr);
+
+    const cubieCube = new CubieCube();
+    const r = cubieCube.isValid();
+    if (!r[0]) throw new Error(r[1]); // a cube juste created should be valid
+
+    const solutions = [];
+    const syms = cubieCube.symmetries()
+
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+  
   return true;
 };
 
