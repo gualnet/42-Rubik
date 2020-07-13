@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import CubieCube from './CubieCube';
 import FaceletCube from './FaceCube';
 
@@ -17,14 +19,8 @@ const resolver = (cubeStr: string, maxMoves = 20, timeout = 3) => {
   console.log("TWO_PHASES_SOLVER");
   console.log(`PARAMS \nMAX MOVES:${maxMoves} \nTIME OUT:${timeout}`);
   
-  const cubieCube = new CubieCube();
-  const cc = new CubieCube();
-  cc.cornersPermutation = [0, 1, 2, 3, 4, 5, 6, 7]
-  cubieCube.isEqual(cc)
-  cc.cornersPermutation = [0, 0, 0, 0, 0, 0, 0, 0];
-  cubieCube.isEqual(cc)
 
-  return;
+  
   // ********************
   try {
     cubeStr = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB'
@@ -40,9 +36,20 @@ const resolver = (cubeStr: string, maxMoves = 20, timeout = 3) => {
     const r = cubieCube.isValid();
     if (!r[0]) throw new Error(r[1]); // a cube juste created should be valid
 
+    // THE MAGIC !
     const solutions = [];
     const syms = cubieCube.symmetries()
-
+    let intersectionLen = (_.intersection([16, 20, 24, 28], syms)).length;
+    let tr = (intersectionLen > 0) ? [0, 3] : [0, 1, 2, 3, 4, 5];
+    intersectionLen = _.intersection(_.range(48, 96), syms).length
+    if (intersectionLen > 0) {
+      tr = tr.filter(value => value < 3);
+    }
+    let th;
+    for (let i of tr) {
+      // th = 
+    }
+    console.log("\n\n RESOLVER END")
   } catch (error) {
     console.log(error);
     return false;
