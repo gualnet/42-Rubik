@@ -1,4 +1,3 @@
-import _ from 'lodash';
 
 /**
  * Binomial coefficient: n choose k

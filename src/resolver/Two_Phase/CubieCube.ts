@@ -1,38 +1,10 @@
-import _, { join, isEmpty } from 'lodash';
+import _ from 'lodash';
 
-import { Cnk, rotateLeft, rotateRight } from './services'
-import FaceletCube from './FaceCube';
-// import basicMoves from './basicMoves';
-import { ECorners, EEdges } from './enums';
-import { ICorners, IEdges } from './interfaces';
+import D from './defines';
 import * as Enums from './enums';
-import { Slider } from '@babylonjs/gui';
-import { Rotate2dBlock } from '@babylonjs/core';
-
-const Corners: ICorners = {
-  [ECorners.URF]: {c: ECorners.URF, o: 0},
-  [ECorners.ULF]: {c: ECorners.ULF, o: 0},
-  [ECorners.ULB]: {c: ECorners.ULB, o: 0},
-  [ECorners.UBR]: {c: ECorners.UBR, o: 0}, 
-  [ECorners.DFR]: {c: ECorners.DFR, o: 0},
-  [ECorners.DLF]: {c: ECorners.DLF, o: 0},
-  [ECorners.DBL]: {c: ECorners.DBL, o: 0},
-  [ECorners.DRB]: {c: ECorners.DRB, o: 0},
-};
-const Edges: IEdges = {
-  [EEdges.UR]: {e: EEdges.UR, o: 0},
-  [EEdges.UF]: {e: EEdges.UF, o: 0},
-  [EEdges.UL]: {e: EEdges.UL, o: 0},
-  [EEdges.UB]: {e: EEdges.UB, o: 0},
-  [EEdges.DR]: {e: EEdges.DR, o: 0},
-  [EEdges.DF]: {e: EEdges.DF, o: 0},
-  [EEdges.DL]: {e: EEdges.DL, o: 0},
-  [EEdges.DB]: {e: EEdges.DB, o: 0},
-  [EEdges.FR]: {e: EEdges.FR, o: 0},
-  [EEdges.FL]: {e: EEdges.FL, o: 0},
-  [EEdges.BL]: {e: EEdges.BL, o: 0},
-  [EEdges.BR]: {e: EEdges.BR, o: 0},
-};
+import FaceletCube from './FaceCube';
+import { ECorners, EEdges } from './enums';
+import { Cnk, rotateLeft, rotateRight } from './services'
 
 class CubieCube {
   cornersPermutation: Array<ECorners>;
@@ -45,33 +17,33 @@ class CubieCube {
     const initedgesPermutation = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
     
     this.cornersPermutation = cornersPos ? cornersPos : _.cloneDeep(initCornerPosition)
-    this.cornersOrientation = cornersOri ? cornersOri : [];
+    this.cornersOrientation = cornersOri ? cornersOri : _.fill(new Array(8), 0);
     
     this.edgesPermutation = edgesPos ? edgesPos : _.cloneDeep(initedgesPermutation);
-    this.edgesOrientation = edgesOri? edgesOri : [];
+    this.edgesOrientation = edgesOri? edgesOri : _.fill(new Array(12), 0);
   }
 
   /*****************
    * Return a facelet representation of the cube
    *****************/
-  toFaceletCube: Function = () => {
+  toFaceletCube = () => {
     console.log('Call cubieCube.toFaceletCube()')
     const faceCube = new FaceletCube();
     
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       const idx2 = this.cornersPermutation[idx];
       const orientation = this.cornersOrientation[idx];
       for (let n = 0; n < 3; n++) {
         faceCube.facelets[faceCube.cornerFacelet[idx][(n + orientation) % 3]] = faceCube.cornerColor[idx2][n];
       }
-    });
-    Enums.EdgesArr.map((value, idx) => {
+    };
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       const idx2 = this.edgesPermutation[idx];
       const orientation = this.edgesOrientation[idx];
       for (let n = 0; n < 2; n++) {
         faceCube.facelets[faceCube.edgeFacelet[idx][(n + orientation) % 2]] = faceCube.edgeColor[idx2][n];
       }
-    });
+    };
     return faceCube;
   };
 
@@ -79,11 +51,11 @@ class CubieCube {
    * Multiply this cubie cube corners with another cubie cube (cubieB)
    * @param cubieB {CubieCube} cubie cube to multiply
    */
-  cornerMultiply: Function = (cubieB: CubieCube) => {
+  cornerMultiply = (cubieB: CubieCube) => {
     
     const cornerPermutation: Array<ECorners> = [];
     const cornerOrientation: Array<number> = [];
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       cornerPermutation[idx] = this.cornersPermutation[cubieB.cornersPermutation[idx]];
 
       const orientationA = this.cornersOrientation[cubieB.cornersOrientation[idx]];
@@ -104,37 +76,37 @@ class CubieCube {
         orientation = (sub < 0) ? sub + 3 : sub; // composition is a regular one.
       }
       cornerOrientation[idx] = orientation;
-    });
-    Enums.CornersArr.map((val, idx) => {
+    };
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       this.cornersPermutation[idx] = cornerPermutation[idx];
       this.cornersOrientation[idx] = cornerOrientation[idx];
-    });
+    };
   };
 
   /**
    * Multiply this cubie cube edges with another cubie cube (cubieB)
    * @param cubieB
    */
-  edgeMultiply: Function = (cubieB: CubieCube) => {
+  edgeMultiply = (cubieB: CubieCube) => {
     const edgePermutation: Array<EEdges> = [];
     const edgeOrientation: Array<number> = [];
 
-    Enums.EdgesArr.map((val, idx) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       edgePermutation[idx] = this.edgesPermutation[cubieB.edgesPermutation[idx]];
       edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPermutation[idx]]) % 2;
-    });
+    };
 
-    Enums.EdgesArr.map((val, idx) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
       this.edgesPermutation[idx] = edgePermutation[idx];
       this.edgesOrientation[idx] = edgeOrientation[idx];
-    });
+    };
   };
 
   /**
    * Multiply this CubieCube with the provided CubieCube
    * @param cubieB 
    */
-  multiply: Function = (cubieB: CubieCube) => {
+  multiply = (cubieB: CubieCube) => {
     this.cornerMultiply(cubieB);
     this.edgeMultiply(cubieB);
   };
@@ -143,7 +115,7 @@ class CubieCube {
    * Compute the inverse of the cubie cube
    * @param d 
    */
-  invCubieCube: Function = (d: CubieCube) => {
+  invCubieCube = (d: CubieCube) => {
     for (let i of _.range(Enums.EdgesNb)) {
       d.edgesPermutation[this.edgesPermutation[i]] = i;
     }
@@ -170,7 +142,7 @@ class CubieCube {
   /**
    * Give the parity of the corners Permutation
    */
-  cornerParity: Function = () => {
+  cornerParity = () => {
     let s = 0;
     for (let i = ECorners.DRB; i > ECorners.URF; i--) {
       for (let j = i - 1; j >= ECorners.URF; j--) {
@@ -186,7 +158,7 @@ class CubieCube {
   /**
    * Give the parity of the edges Permutation
    */
-  edgeParity: Function = () => {
+  edgeParity = () => {
     let s = 0;
     for (let i = EEdges.BR; i > EEdges.UR; i--) {
       for (let j = i - 1; j >= EEdges.UR; j--) {
@@ -199,6 +171,30 @@ class CubieCube {
     return s;
   };
 
+  /**
+   * Generate a symmetries list of the cubie cube
+   */
+  symmetries = () => {
+    const symCube = require('./symmetries').symCube;
+    const invIdx = require('./symmetries').invIdx;
+    
+    let symmetries: Array<number> = [];
+    const cc = new CubieCube();
+    for (let i = 0; i < D.N_SYM; i++) {
+      let cc2 = new CubieCube(symCube[i].cornerPermutation, symCube[i].cornerOrientation, symCube[i].edgePermutation, symCube[i].edgeOrientation);
+      cc2.multiply(this);
+      cc2.multiply(symCube[invIdx[i]]);
+      if (this.isEqual(cc2)) {
+        symmetries =  symmetries.concat(i);
+      }
+      cc2.invCubieCube(cc);
+      if (this.isEqual(cc)) {
+        symmetries = symmetries.concat(i + D.N_SYM);
+      }
+    }
+    return symmetries;
+  }
+
   //      ***************************
   // ***** Coordinates GETTER & SETTER *****
   //      ***************************
@@ -210,7 +206,7 @@ class CubieCube {
    * Return the twist number of the 8 corner
    * @return 0 <= twist <= 3^7 - 1
    */
-  getTwist: Function = () => {
+  getTwist = () => {
     let twist = 0;
     for (let i = ECorners.URF; i < ECorners.DRB; i++) {
       twist = 3 * twist + this.cornersOrientation[i];
@@ -222,7 +218,7 @@ class CubieCube {
    * 
    * @param twist {number} 0 <= twist <= 3^7 - 1
    */
-  setTwist: Function = (twist: number) => {
+  setTwist = (twist: number) => {
     let twistParity = 0;
     for (let i = ECorners.DRB; i > ECorners.URF; i--) {
       this.cornersOrientation[i] = twist % 3;
@@ -240,7 +236,7 @@ class CubieCube {
    * Return the flip number of the 12 edges
    * @return 0 <= flip <= 2^11 - 1
    */
-  getFlip: Function = () => {
+  getFlip = () => {
     let flip = 0;
     for (let i = EEdges.UR; i < EEdges.BR; i++) {
       flip = 2 * flip + this.edgesOrientation[i];
@@ -248,7 +244,7 @@ class CubieCube {
     return flip;
   };
 
-  setFlip: Function = (flip: number) => {
+  setFlip = (flip: number) => {
     let flipParity = 0;
     for (let i = EEdges.BR; i > EEdges.UR; i--) {
       this.edgesOrientation[i] = flip % 2;
@@ -265,7 +261,7 @@ class CubieCube {
    * Get the location of the UD-slice edges FR,FL,BL and BR ignoring their permutation.
    * 0 <= slice < 495 in phase 1, slice = 0 in phase 2.
    */
-  getSlice: Function = () => {
+  getSlice = () => {
     let a = 0;
     let x = 0;
 
@@ -279,7 +275,7 @@ class CubieCube {
     return a;
   };
 
-  setSlice: Function = (index: number) => {
+  setSlice = (index: number) => {
     const sliceEdge = [ EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR ];
     const otherEdge = [ EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB ];
     let a = index;
@@ -316,7 +312,7 @@ class CubieCube {
    * 0 <= sliceSorted < 24 in phase 2.
    * sliceSorted = 0 for a solved cube.
    */
-  getSliceSorted: Function = () => {
+  getSliceSorted = () => {
     let a = 0;
     let x = 0;
     let edge4 = [];
@@ -342,7 +338,7 @@ class CubieCube {
     return (24 * a + b);
   };
 
-  setSliceSorted: Function = (index: number) => {
+  setSliceSorted = (index: number) => {
     let sliceEdge = [EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
     let otherEdge = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB];
     let permutation = index % 24;
@@ -389,7 +385,7 @@ class CubieCube {
    * 0 <= upEdges < 1680 in phase 2.
    * upEdges = 1656 for solved cube.
    */
-  getUpEdges: Function = () => {
+  getUpEdges = () => {
     let a = 0;
     let x = 0;
     let edge4 = [];
@@ -419,7 +415,7 @@ class CubieCube {
     return (24 * a + b);
   };
 
-  setUpEdges: Function = (index: number) => {
+  setUpEdges = (index: number) => {
     let sliceEdge = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB];
     let otherEdge = [EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR];
     let permutation = index % 4;
@@ -467,7 +463,7 @@ class CubieCube {
    * 0 <= downEdges < 1680 in phase 2
    * downEdges = 0 for solved cube.
    */
-  getDownEdges: Function = () => {
+  getDownEdges = () => {
     let a = 0;
     let x = 0;
     let edge4 = [];
@@ -496,7 +492,7 @@ class CubieCube {
     }
     return (24 * a + b);
   };
-  setDownEdges: Function = (index: number) => {
+  setDownEdges = (index: number) => {
     let sliceEdge = [EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB];
     let otherEdge = [EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR, EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB];
     let permutation = index % 4;
@@ -544,7 +540,7 @@ class CubieCube {
   * 0 <= UDEdges < 40320 in phase 2.
   * UDEdges = 0 for solved cube.
   */
-  getUDEdges: Function = () => {
+  getUDEdges = () => {
     let permutation = this.edgesPermutation.slice(0, 8);
     let b = 0;
     let k: number;
@@ -558,7 +554,7 @@ class CubieCube {
     }
     return b;
   };
-  setUDEdges: Function = (index: number) => {
+  setUDEdges = (index: number) => {
     for (let i = 0; i < 8; i++) {
       this.edgesPermutation[i] = i;
     }
@@ -576,7 +572,7 @@ class CubieCube {
   /**
    * Check if the cube is in a valid state
    */
-  isValid: Function = () => {
+  isValid = (): [boolean, string] => {
     let edgeCount = _.fill(new Array(12), 0);
     let s = 0;
 
@@ -584,30 +580,46 @@ class CubieCube {
       edgeCount[this.edgesPermutation[i]] += 1
     }
     for (let i = 0; i < Enums.EdgesNb; i++) {
-      if (edgeCount[i] != 1)
-        return 'Error: Some edges are undefined.';
+      if (edgeCount[i] !== 1)
+        return [false, '[Error] CubieCube: Some edges are undefined.'];
     }
 
     s = 0;
     for (let i = 0; i < Enums.EdgesNb; i++) {
       s += this.edgesPermutation[i];
     }
-    if ((s % 2) != 0) {
-      return 'Error: Total edge flip is wrong.';
+    if ((s % 2) !== 0) {
+      return [false, '[Error] CubieCube: Total edge flip is wrong.'];
     }
 
     s = 0;
     for (let i = 0; i < Enums.CornersNb; i++) {
       s += this.cornersOrientation[i];
     }
-    if ((s % 3) != 0)
-      return 'Error: Total corner twist is wrong.';
+    if ((s % 3) !== 0)
+      return [false, '[Error] CubieCube: Total corner twist is wrong.'];
 
     if (this.edgeParity() !== this.cornerParity())
-      return 'Error: Wrong edge and corner parity'
+      return [false, '[Error] CubieCube: Wrong edge and corner parity'];
     
-    return 'CUBE VALIDATION: OK'
+    return [true, '']
   }
+
+  /**
+   * check the equality between this instance and cube on:
+   *  corner.(permutation & orientation) & edge.(permutation & orientation)
+   * @param cube 
+   */
+  isEqual = (cube: CubieCube): boolean => {
+    const cpDif = _.difference(this.cornersPermutation, cube.cornersPermutation);
+    const coDif = _.difference(this.cornersOrientation, cube.cornersOrientation);
+    const epDif = _.difference(this.edgesPermutation, cube.edgesPermutation);
+    const eoDif = _.difference(this.edgesOrientation, cube.edgesOrientation);
+    if (cpDif.length || coDif.length || epDif.length || eoDif.length) {
+      return false;
+    }
+    return true
+  };
 
 
   /**
@@ -615,7 +627,7 @@ class CubieCube {
    * Private *
    * =========
    */
-  private invalidateEdgesPermutation: Function = () => {
+  private invalidateEdgesPermutation = () => {
     this.edgesPermutation = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
   }
 };

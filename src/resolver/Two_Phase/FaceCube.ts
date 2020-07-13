@@ -1,6 +1,7 @@
-import { EColors, ECorners, EEdges, EFacelets } from './enums';
+import _ from 'lodash';
 import * as Enums from './enums'
 import CubieCube from './CubieCube';
+import { EColors, EFacelets } from './enums';
 
 /***************************
  * Cube on a Facelet Level *
@@ -49,7 +50,7 @@ export default class FaceletCube {
       }
     }
 
-    if (this.facelets.length !== 54) throw Error('Error constructing facelet representation')
+    if (this.facelets.length !== 54) throw Error('[Error] FaceCube: constructing facelet representation')
 
     // Value of cornerFacelet
     this.cornerFacelet = [
@@ -75,10 +76,9 @@ export default class FaceletCube {
   /***********
    * toString
    ***********/
-  toString: Function = () => {
+  toString = () => {
     const array: string[] = [];
-    
-    this.facelets.map(elem => {
+    for (let elem of this.facelets) {
       switch (elem) {
         case EColors.U:
           array.push('U')
@@ -101,30 +101,70 @@ export default class FaceletCube {
         default:
           break;
       }
-    });
+    }
     return(array.join(''));
-  }
+  };
 
-  /**************
-   * toCubieCube
-   **************/
+  /**
+   * Construct a facelet cube from a string.
+   * 
+   */
+  fromString = (str: string) => {
+    console.log(str)
+    if (str.length !== 54) throw new Error('[ERROR] FaceCube: invalide string length')
+
+    const counter = _.fill(new Array(6), 0);
+    for (let i = 0; i < 54; i++) {
+      switch (str[i]) {
+        case 'U':
+          this.facelets[i] += 1;
+          counter[EColors.U] += 1;
+          break;
+        case 'R':
+          this.facelets[i] += 1;
+          counter[EColors.R] += 1;
+            break;
+        case 'F':
+          this.facelets[i] += 1;
+          counter[EColors.F] += 1;
+          break;
+        case 'D':
+          this.facelets[i] += 1;
+          counter[EColors.D] += 1;
+          break;
+        case 'L':
+          this.facelets[i] += 1;
+          counter[EColors.L] += 1;
+            break;
+        case 'B':
+          this.facelets[i] += 1;
+          counter[EColors.B] += 1;
+          break;
+        default:
+          break;
+      }
+    }
+    for (let elem of counter) {
+      if (elem !== 9) throw new Error('[Error] FaceCube: Cube definition from string failed')
+    }
+    return true;
+  };
+
+  /**
+   * Return a cubie representation of the facelet cube
+   */
   toCubieCube = () => {
-    let orientation;
     const cubieCube = new CubieCube();
 
     // Invalidate corners & Edges
-    for (let i = 0; i < Enums.CornersNb; i++) {
-      cubieCube.cornersPermutation[i] = ECorners.URF;
-    }
-    for (let i = 0; i < Enums.EdgesNb; i++) {
-      cubieCube.edgesPermutation[i] = EEdges.UR;
-    }
+    cubieCube.cornersPermutation = _.fill(new Array(Enums.CornersNb), -1);
+    cubieCube.edgesPermutation = _.fill(new Array(Enums.EdgesNb), -1);
     // ***
 
     // 
     let color1: EColors, color2: EColors;
     // Corners
-    Enums.CornersArr.map((value, idx) => {
+    for (let idx = 0; idx < Enums.CornersNb; idx++) {
       for (let orientation = 0; orientation < 3; orientation++) {
 
         const cornerFaceletPlace = this.cornerFacelet[idx][orientation];
@@ -132,24 +172,24 @@ export default class FaceletCube {
 
         if (faceletColor === EColors.U || faceletColor === EColors.D) break;
 
-        const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3]
-        const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3]
+        const cornerFaceletPlace1 = this.cornerFacelet[idx][(orientation + 1) % 3];
+        const cornerFaceletPlace2 = this.cornerFacelet[idx][(orientation + 2) % 3];
         color1 = this.facelets[cornerFaceletPlace1];
         color2 = this.facelets[cornerFaceletPlace2];
 
-        Enums.CornersArr.map((value, idx2) => {
+        for (let idx2 = 0; idx2 < Enums.CornersNb; idx2++) {
           // get the color of the corner [idx2]
           if (this.cornerColor[idx2][1] === color1 && this.cornerColor[idx2][2] === color2) {
             cubieCube.cornersPermutation[idx] = idx2;
             cubieCube.cornersOrientation[idx] = orientation % 3;
             return;
           }
-        });
+        };
       }
-    });
+    };
     // Edges
-    Enums.EdgesArr.map((value, idx) => {
-      Enums.EdgesArr.map((value, idx2) => {
+    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
+      for (let idx2 = 0; idx2 < Enums.EdgesNb; idx2++) {
         let edgeFaceletColor = this.facelets[this.edgeFacelet[idx][0]];
         let edgeFaceletColor2 = this.facelets[this.edgeFacelet[idx][1]];
         //if edge Facelet color === edge Color
@@ -163,8 +203,8 @@ export default class FaceletCube {
           cubieCube.edgesOrientation[idx] = 1;
           return;
         }
-      });
-    });
+      };
+    };
   }
 
 }
