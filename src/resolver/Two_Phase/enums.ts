@@ -15,13 +15,11 @@ export enum ECorners {
   URF, ULF, ULB, UBR, DFR, DLF, DBL, DRB,
 };
 export const CornersArr = ["URF", "ULF", "ULB", "UBR", "DFR", "DLF", "DBL", "DRB"];
-export const CornersNb = 8;
 
 export enum EEdges {
   UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR,
 };
 export const EdgesArr = ["UR", "UF", "UL", "UB", "DR", "DF", "DL", "DB", "FR", "FL", "BL", "BR"];
-export const EdgesNb = 12;
 
 
 /**
@@ -68,7 +66,6 @@ export const FaceletsNb = 54;
 
 export enum EColors { U, R, F, D, L, B };
 export const ColorsArr = ['U', 'R', 'F', 'D', 'L', 'B'];
-export const ColorsNb = 6;
 
 /**
  * Basic symmetries of the cube.
