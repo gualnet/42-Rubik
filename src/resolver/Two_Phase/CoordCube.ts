@@ -1,4 +1,5 @@
 import CubieCube from "./CubieCube";
+import * as symmetry from './symmetries'
 import D from './defines';
 
 
@@ -19,9 +20,9 @@ export default class CoordinateCube {
   downEdges: number;
   corners: number;
   udEdges: number;
-  flipsliceClassidx: ;
-  flipsliceSym: ;
-  flipsliceRep: ;
+  flipsliceClassidx: number = 0;
+  flipsliceSym: number = 0;
+  flipsliceRep: number = 0;
 
   constructor(cubieCubie?: CubieCube) {
     if (!cubieCubie) {
@@ -45,9 +46,11 @@ export default class CoordinateCube {
       this.udEdges = (this.sliceSorted < D.N_PERM_4) ? cubieCubie.getUDEdges() : -1
 
       // Symmetry reduced flipslice coordinate used in phase 1
-      this.flipsliceClassidx
-      this.flipsliceSym
-      this.flipsliceRep
+      const indice = D.N_FLIP * Math.floor(this.sliceSorted / D.N_PERM_4) + this.flip;
+      this.flipsliceClassidx = symmetry.flipslice_classidx[indice];
+      this.flipsliceSym = symmetry.flipslice_sym[indice];
+      this.flipsliceRep = symmetry.flipslice_rep[this.flipsliceClassidx];
+
       // Symmetry reduced corner permutation coordinate used in phase 2
       this.flipsliceClassidx
       this.flipsliceSym

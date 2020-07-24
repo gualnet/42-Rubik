@@ -1,3 +1,4 @@
+import fs from 'fs';
 import _ from 'lodash';
 
 import CubieCube from './CubieCube';
@@ -73,3 +74,108 @@ for (let j = 0; j < D.N_SYM; j++) {
     }
   }
 };
+
+/**
+ * Generate the tables to handle the symmetry reduced flip-slice coordinate in  phase 1
+ */
+// File names
+const FILE_DIR_TABLE = './tables'
+const FILE_CLASS_IDX = 'fs_classidx.rbk';
+const FILE_SYM = 'fs_sym.rbk';
+const FILE_REP = 'fs_rep.rbk';
+const INVALID = 65535;
+export let flipslice_classidx: Array<number>;
+export let flipslice_sym: Array<number>;
+export let flipslice_rep: Array<number>;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SYM}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_REP}`)) {
+  console.log('[INFO] Creating flipsplice symmetry tables...');
+  
+  flipslice_classidx = _.fill(new Array(D.N_FLIP * D.N_SLICE), INVALID) // idx -> classidx
+  flipslice_sym = _.fill(new Array(D.N_FLIP * D.N_SLICE), 0); // idx -> symmetry
+  flipslice_rep = _.fill(new Array(D.N_FLIPSLICE_CLASS), 0) // classidx -> idx of representant
+  
+  let classIdx = 0;
+  let idx: number;
+  let ss: CubieCube;
+  let idxNew: number;
+  let cc = new CubieCube();
+  for (let sliceNb = 0; sliceNb < D.N_SLICE; sliceNb++) {
+    cc.setSlice(sliceNb);
+    for (let flipNb = 0; flipNb < D.N_FLIP; flipNb++) {
+      cc.setFlip(flipNb);
+      idx = D.N_FLIP * sliceNb + flipNb;
+      if ((idx + 1) % 4000 === 0)
+        process.stdout.write(".");
+      if ((idx + 1) % 320000 === 0)
+        process.stdout.write("\n");
+
+      if (flipslice_classidx[idx] === INVALID) {
+        flipslice_classidx[idx] = classIdx;
+        flipslice_sym[idx] = 0;
+        flipslice_rep[classIdx] = idx;
+      } else {
+        continue;
+      }
+      for (let symNb = 0; symNb < D.N_SYM_D4h; symNb++) {
+        ss = new CubieCube(symCube[invIdx[symNb]].cornersPermutation, symCube[invIdx[symNb]].cornersOrientation, symCube[invIdx[symNb]].edgesPermutation, symCube[invIdx[symNb]].edgesOrientation);
+        ss.edgeMultiply(cc);
+        ss.edgeMultiply(symCube[symNb]);
+        idxNew = D.N_FLIP * ss.getSlice() + ss.getFlip();
+        if (flipslice_classidx[idxNew] === INVALID) {
+          flipslice_classidx[idxNew] = classIdx;
+          flipslice_sym[idxNew] = 5;
+        }
+      }
+      classIdx++;
+    }
+  }
+
+  process.stdout.write("\n");
+  console.log("write process start");
+
+
+  // let data = JSON.stringify(flipslice_classidx);
+  console.log(`write in: ${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`, JSON.stringify(flipslice_classidx));
+  console.log("data", flipslice_classidx);
+  
+
+  // data = flipslice_sym;
+  console.log(`write in: ${FILE_DIR_TABLE}/${FILE_SYM}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_SYM}`, JSON.stringify(flipslice_sym));
+  console.log("data", flipslice_sym);
+  
+  
+  // data = flipslice_rep;
+  console.log(`write in: ${FILE_DIR_TABLE}/${FILE_REP}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_REP}`, JSON.stringify(flipslice_rep));
+  console.log("data", flipslice_rep);
+
+
+
+  console.log("write process end");
+
+} else {
+
+  console.log('Loading flipsplice symmetry tables...');
+  let jsonstr: string;
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`, { encoding: 'utf8' });
+  const flipslice_classidx: Array<number> = JSON.parse(jsonstr);
+  console.log("data", flipslice_classidx);
+  
+  
+  
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_SYM}`, 'utf8');
+  const flipslice_sym: Array<number> = JSON.parse(jsonstr);
+  console.log("data", flipslice_sym);
+  
+  
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_REP}`, 'utf8');
+  const flipslice_rep: Array<number> = JSON.parse(jsonstr);
+  console.log("data", flipslice_rep);
+
+
+
+}

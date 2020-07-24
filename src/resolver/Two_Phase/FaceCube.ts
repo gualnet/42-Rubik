@@ -1,4 +1,6 @@
 import _ from 'lodash';
+
+import D from './defines';
 import * as Enums from './enums'
 import CubieCube from './CubieCube';
 import { EColors, EFacelets } from './enums';
@@ -157,14 +159,14 @@ export default class FaceletCube {
     const cubieCube = new CubieCube();
 
     // Invalidate corners & Edges
-    cubieCube.cornersPermutation = _.fill(new Array(Enums.CornersNb), -1);
-    cubieCube.edgesPermutation = _.fill(new Array(Enums.EdgesNb), -1);
+    cubieCube.cornersPermutation = _.fill(new Array(D.NB_CORNERS), -1);
+    cubieCube.edgesPermutation = _.fill(new Array(D.NB_EDGES), -1);
     // ***
 
     // 
     let color1: EColors, color2: EColors;
     // Corners
-    for (let idx = 0; idx < Enums.CornersNb; idx++) {
+    for (let idx = 0; idx < D.NB_CORNERS; idx++) {
       for (let orientation = 0; orientation < 3; orientation++) {
 
         const cornerFaceletPlace = this.cornerFacelet[idx][orientation];
@@ -177,7 +179,7 @@ export default class FaceletCube {
         color1 = this.facelets[cornerFaceletPlace1];
         color2 = this.facelets[cornerFaceletPlace2];
 
-        for (let idx2 = 0; idx2 < Enums.CornersNb; idx2++) {
+        for (let idx2 = 0; idx2 < D.NB_CORNERS; idx2++) {
           // get the color of the corner [idx2]
           if (this.cornerColor[idx2][1] === color1 && this.cornerColor[idx2][2] === color2) {
             cubieCube.cornersPermutation[idx] = idx2;
@@ -188,8 +190,8 @@ export default class FaceletCube {
       }
     };
     // Edges
-    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
-      for (let idx2 = 0; idx2 < Enums.EdgesNb; idx2++) {
+    for (let idx = 0; idx < D.NB_EDGES; idx++) {
+      for (let idx2 = 0; idx2 < D.NB_EDGES; idx2++) {
         let edgeFaceletColor = this.facelets[this.edgeFacelet[idx][0]];
         let edgeFaceletColor2 = this.facelets[this.edgeFacelet[idx][1]];
         //if edge Facelet color === edge Color
