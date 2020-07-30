@@ -1,3 +1,4 @@
+import fs from 'fs';
 import _ from 'lodash';
 
 import CubieCube from './CubieCube';
@@ -73,3 +74,184 @@ for (let j = 0; j < D.N_SYM; j++) {
     }
   }
 };
+
+/**
+ * Generate the tables to handle the symmetry reduced flip-slice coordinate in  phase 1
+ */
+// File names
+const FILE_DIR_TABLE = './tables'
+const FILE_CLASS_IDX = 'fs_classidx.rbk';
+const FILE_SYM = 'fs_sym.rbk';
+const FILE_REP = 'fs_rep.rbk';
+const INVALID = 65535;
+export let flipsliceClassIdx: Array<number>;
+export let flipsliceSym: Array<number>;
+export let flipsliceRep: Array<number>;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SYM}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_REP}`)) {
+  console.log('[INFO] Creating flipsplice symmetry tables...');
+  
+  flipsliceClassIdx = _.fill(new Array(D.N_FLIP * D.N_SLICE), INVALID) // idx -> classidx
+  flipsliceSym = _.fill(new Array(D.N_FLIP * D.N_SLICE), 0); // idx -> symmetry
+  flipsliceRep = _.fill(new Array(D.N_FLIPSLICE_CLASS), 0) // classidx -> idx of representant
+  
+  let classIdx = 0;
+  let idx: number;
+  let ss: CubieCube;
+  let idxNew: number;
+  let cc = new CubieCube();
+  for (let sliceNb = 0; sliceNb < D.N_SLICE; sliceNb++) {
+    cc.setSlice(sliceNb);
+    for (let flipNb = 0; flipNb < D.N_FLIP; flipNb++) {
+      cc.setFlip(flipNb);
+      idx = D.N_FLIP * sliceNb + flipNb;
+      if ((idx + 1) % 4000 === 0)
+        process.stdout.write(".");
+      if ((idx + 1) % 320000 === 0)
+        process.stdout.write("\n");
+
+      if (flipsliceClassIdx[idx] === INVALID) {
+        flipsliceClassIdx[idx] = classIdx;
+        flipsliceSym[idx] = 0;
+        flipsliceRep[classIdx] = idx;
+      } else {
+        continue;
+      }
+      for (let symNb = 0; symNb < D.N_SYM_D4h; symNb++) {
+        ss = new CubieCube(symCube[invIdx[symNb]].cornersPermutation, symCube[invIdx[symNb]].cornersOrientation, symCube[invIdx[symNb]].edgesPermutation, symCube[invIdx[symNb]].edgesOrientation);
+        ss.edgeMultiply(cc);
+        ss.edgeMultiply(symCube[symNb]);
+        idxNew = D.N_FLIP * ss.getSlice() + ss.getFlip();
+        if (flipsliceClassIdx[idxNew] === INVALID) {
+          flipsliceClassIdx[idxNew] = classIdx;
+          flipsliceSym[idxNew] = 5;
+        }
+      }
+      classIdx++;
+    }
+  }
+
+  process.stdout.write("\n");
+
+  // let data = JSON.stringify(flipsliceClassIdx);
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`, JSON.stringify(flipsliceClassIdx));
+  // console.log("data", flipsliceClassIdx);
+  
+
+  // data = flipsliceSym;
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_SYM}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_SYM}`, JSON.stringify(flipsliceSym));
+  // console.log("data", flipsliceSym);
+  
+  
+  // data = flipsliceRep;
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_REP}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_REP}`, JSON.stringify(flipsliceRep));
+  // console.log("data", flipsliceRep);
+
+
+
+  console.log("write process end");
+
+} else {
+
+  console.log('Loading flipsplice symmetry tables...');
+  let jsonstr: string;
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_CLASS_IDX}`, { encoding: 'utf8' });
+  const flipsliceClassIdx: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", flipsliceClassIdx);
+
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_SYM}`, 'utf8');
+  const flipsliceSym: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", flipsliceSym);
+
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_REP}`, 'utf8');
+  const flipsliceRep: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", flipsliceRep);
+}
+
+/**
+ * Generate the tables to handle the symmetry reduced corner permutation coordinate in phase 2
+ */
+// File names
+const FILE_CORNER_CLASS_IDX = 'co_classidx.rbk';
+const FILE_cornerSym = 'co_sym.rbk';
+const FILE_cornerRep = 'co_rep.rbk';
+export let cornerClassIdx: Array<number>;
+export let cornerSym: Array<number>;
+export let cornerRep: Array<number>;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_cornerSym}`)
+|| !fs.existsSync(`${FILE_DIR_TABLE}/${FILE_cornerRep}`)) {
+  console.log("[INFO] Creating corner sym-tables...");
+
+  cornerClassIdx = _.fill(new Array(D.N_CORNERS), INVALID) // idx -> classidx
+  cornerSym = _.fill(new Array(D.N_CORNERS), 0) // idx -> symmetry
+  cornerRep = _.fill(new Array(D.N_CORNERS_CLASS), 0) // classidx -> idx of representant
+
+  let classidx = 0
+  const cc = new CubieCube();
+  let ss: CubieCube;
+  let cpNew: number;
+  for (let cp = 0; cp < D.N_CORNERS; cp++) {
+    cc.setCorners(cp)
+    if ((cp + 1) % 8000 === 0)
+      process.stdout.write(".");
+    
+    if (cornerClassIdx[cp] === INVALID) {
+      cornerClassIdx[cp] = classidx
+      cornerSym[cp] = 0
+      cornerRep[classidx] = cp
+    } else {
+      continue;
+    }
+
+    for (let s = 0; s < D.N_SYM_D4h; s++) {
+      ss = new CubieCube(symCube[invIdx[s]].cornersPermutation, symCube[invIdx[s]].cornersOrientation, symCube[invIdx[s]].edgesPermutation, symCube[invIdx[s]].edgesOrientation);
+      ss.cornerMultiply(cc)
+      ss.cornerMultiply(symCube[s]) // s^-1*cc*s
+      cpNew = ss.getCorners();
+      if (cornerClassIdx[cpNew] === INVALID) {
+        cornerClassIdx[cpNew] = classidx;
+        cornerSym[cpNew] = s;
+      }
+    }
+    classidx++;
+  }
+  process.stdout.write("\n");
+
+  let data = cornerClassIdx;
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`, JSON.stringify(cornerClassIdx));
+  // console.log("data", cornerClassIdx);
+  
+
+  data = cornerSym;
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_cornerSym}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_cornerSym}`, JSON.stringify(cornerSym));
+  // console.log("data", cornerSym);
+  
+  
+  data = cornerRep;
+  // console.log(`write in: ${FILE_DIR_TABLE}/${FILE_cornerRep}`);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_cornerRep}`, JSON.stringify(cornerRep));
+  // console.log("data", cornerRep);
+} else {
+  console.log("[INFO] Loading corner sym-tables...");
+
+  let jsonstr: string;
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`, 'utf8');
+  const cornerClassIdx: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", cornerClassIdx);
+
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_cornerSym}`, 'utf8');
+  const cornerSym: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", cornerSym);
+
+  jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_cornerRep}`, 'utf8');
+  const cornerRep: Array<number> = JSON.parse(jsonstr);
+  // console.log("data", cornerRep);
+
+}

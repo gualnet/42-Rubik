@@ -30,14 +30,14 @@ class CubieCube {
     console.log('Call cubieCube.toFaceletCube()')
     const faceCube = new FaceletCube();
     
-    for (let idx = 0; idx < Enums.CornersNb; idx++) {
+    for (let idx = 0; idx < D.NB_CORNERS; idx++) {
       const idx2 = this.cornersPermutation[idx];
       const orientation = this.cornersOrientation[idx];
       for (let n = 0; n < 3; n++) {
         faceCube.facelets[faceCube.cornerFacelet[idx][(n + orientation) % 3]] = faceCube.cornerColor[idx2][n];
       }
     };
-    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
+    for (let idx = 0; idx < D.NB_EDGES; idx++) {
       const idx2 = this.edgesPermutation[idx];
       const orientation = this.edgesOrientation[idx];
       for (let n = 0; n < 2; n++) {
@@ -55,7 +55,7 @@ class CubieCube {
     
     const cornerPermutation: Array<ECorners> = [];
     const cornerOrientation: Array<number> = [];
-    for (let idx = 0; idx < Enums.CornersNb; idx++) {
+    for (let idx = 0; idx < D.NB_CORNERS; idx++) {
       cornerPermutation[idx] = this.cornersPermutation[cubieB.cornersPermutation[idx]];
 
       const orientationA = this.cornersOrientation[cubieB.cornersOrientation[idx]];
@@ -77,7 +77,7 @@ class CubieCube {
       }
       cornerOrientation[idx] = orientation;
     };
-    for (let idx = 0; idx < Enums.CornersNb; idx++) {
+    for (let idx = 0; idx < D.NB_CORNERS; idx++) {
       this.cornersPermutation[idx] = cornerPermutation[idx];
       this.cornersOrientation[idx] = cornerOrientation[idx];
     };
@@ -91,12 +91,12 @@ class CubieCube {
     const edgePermutation: Array<EEdges> = [];
     const edgeOrientation: Array<number> = [];
 
-    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
+    for (let idx = 0; idx < D.NB_EDGES; idx++) {
       edgePermutation[idx] = this.edgesPermutation[cubieB.edgesPermutation[idx]];
       edgeOrientation[idx] = (cubieB.edgesOrientation[idx] + this.edgesOrientation[cubieB.edgesPermutation[idx]]) % 2;
     };
 
-    for (let idx = 0; idx < Enums.EdgesNb; idx++) {
+    for (let idx = 0; idx < D.NB_EDGES; idx++) {
       this.edgesPermutation[idx] = edgePermutation[idx];
       this.edgesOrientation[idx] = edgeOrientation[idx];
     };
@@ -116,10 +116,10 @@ class CubieCube {
    * @param d 
    */
   invCubieCube = (d: CubieCube) => {
-    for (let i of _.range(Enums.EdgesNb)) {
+    for (let i of _.range(D.NB_EDGES)) {
       d.edgesPermutation[this.edgesPermutation[i]] = i;
     }
-    for (let i of _.range(Enums.EdgesNb)) {
+    for (let i of _.range(D.NB_EDGES)) {
       d.edgesOrientation[i] = this.edgesOrientation[d.edgesPermutation[i]];
     }
 
@@ -266,7 +266,6 @@ class CubieCube {
     let x = 0;
 
     for (let i = EEdges.FR; i <= EEdges.BR; i++) {
-      console.log("i", i)
       if (EEdges.FR <= this.edgesPermutation[i] && this.edgesPermutation[i] <= EEdges.BR) {
         a += Cnk(11 - i, x + 1);
         x += 1
@@ -284,7 +283,7 @@ class CubieCube {
     
     // set slice edges
     let x = 4;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (a - Cnk(11 - i, x) >= 0) {
         this.edgesPermutation[i] = sliceEdge[4 - x];
         a -= Cnk(11 - i, x);
@@ -294,7 +293,7 @@ class CubieCube {
 
     // then set the reamaining (other) edges
     x = 0;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
         x += 1;
@@ -358,7 +357,7 @@ class CubieCube {
     }
     // set slice edges
     x = 4;
-    for (let i = 0; Enums.EdgesNb; i++) {
+    for (let i = 0; D.NB_EDGES; i++) {
       if ((location - Cnk(11 - i, x)) >= 0) {
         this.edgesPermutation[i] = sliceEdge[4 - x];
         location -= Cnk(11 - i, x);
@@ -367,7 +366,7 @@ class CubieCube {
     }
     // set the remaining edges
     x = 0;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
         x++;
@@ -435,7 +434,7 @@ class CubieCube {
     }
     // Set slice edges
     x = 4;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (location - Cnk(11 - i, x) >= 0) {
         this.edgesPermutation[i] = sliceEdge[4 - x];
         location -= Cnk(11 - i, x);
@@ -443,13 +442,13 @@ class CubieCube {
       }
     }
     // Set the remaining edges
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
         x++;
       }
     }
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       this.edgesPermutation = rotateLeft(this.edgesPermutation, 0, 11);
     }
   };
@@ -511,7 +510,7 @@ class CubieCube {
     }
     // Set slice edges
     x = 4;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (location - Cnk(11 - i, x) >= 0) {
         this.edgesPermutation[i] = sliceEdge[4 - x];
         location -= Cnk(11 - i, x);
@@ -520,7 +519,7 @@ class CubieCube {
     }
     // Set the remaining edges
     x = 0;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (this.edgesPermutation[i] === -1) {
         this.edgesPermutation[i] = otherEdge[x];
         x++;
@@ -531,15 +530,53 @@ class CubieCube {
     }
   };
 
+  /**
+   * CORNERS
+   */
+  /**
+   * Get the permutation of the 8 corners.
+   * 0 <= corners < 40320 defined but unused in phase 1
+   * 0 <= corners < 40320 in phase 2
+   * corners = 0 for solved cube
+   */
+  getCorners = ():number => {
+    let permutation = [...this.cornersPermutation];
+    let b = 0;
+    let k: number;
+    for (let i = ECorners.DRB; i > ECorners.URF; i--) {
+      k = 0;
+      while (permutation[i] !== i) {
+        permutation = rotateLeft(permutation, 0, i);
+        k++;
+      }
+      b = (i + 1) * b + k;
+    }
+    return b;
+  };
+  setCorners = (index: number): void => {
+    let k: number;
+    this.cornersPermutation = _.range(D.NB_CORNERS);
+    
+    for (let i = 0; i < D.NB_CORNERS; i++) {
+      k = index % (i + 1);
+      index = Math.floor(index / (i + 1));
+      while (k > 0) {
+        this.cornersPermutation = rotateRight(this.cornersPermutation, 0, i);
+        k--;
+      }
+    }
+  }
+
+
   /************
    * UD EDGES *
-  *************/
- /**
-  * Get the permutation of the 8 U and D edges.
-  * UDEdges undefined in phase 1.
-  * 0 <= UDEdges < 40320 in phase 2.
-  * UDEdges = 0 for solved cube.
-  */
+   ************/
+  /**
+   * Get the permutation of the 8 U and D edges.
+   * UDEdges undefined in phase 1.
+   * 0 <= UDEdges < 40320 in phase 2.
+   * UDEdges = 0 for solved cube.
+   */
   getUDEdges = () => {
     let permutation = this.edgesPermutation.slice(0, 8);
     let b = 0;
@@ -576,16 +613,16 @@ class CubieCube {
     let edgeCount = _.fill(new Array(12), 0);
     let s = 0;
 
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       edgeCount[this.edgesPermutation[i]] += 1
     }
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       if (edgeCount[i] !== 1)
         return [false, '[Error] CubieCube: Some edges are undefined.'];
     }
 
     s = 0;
-    for (let i = 0; i < Enums.EdgesNb; i++) {
+    for (let i = 0; i < D.NB_EDGES; i++) {
       s += this.edgesPermutation[i];
     }
     if ((s % 2) !== 0) {
@@ -593,7 +630,7 @@ class CubieCube {
     }
 
     s = 0;
-    for (let i = 0; i < Enums.CornersNb; i++) {
+    for (let i = 0; i < D.NB_CORNERS; i++) {
       s += this.cornersOrientation[i];
     }
     if ((s % 3) !== 0)
@@ -620,6 +657,65 @@ class CubieCube {
     }
     return true
   };
+
+  
+
+
+  /**
+   * Representation of the basic cube moves
+   * @param idx {number} 0 <= idx <= 5
+   * @returns undefined || CubieCube[]
+   */
+  static basicMoveCube = (idx: number) => {
+    switch (idx) {
+      case 0:
+        // Up-move
+        const cpU = [ECorners.UBR, ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB]
+        const coU = [0, 0, 0, 0, 0, 0, 0, 0]
+        const epU = [EEdges.UB, EEdges.UR, EEdges.UF, EEdges.UL, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+        const eoU = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpU, coU, epU, eoU)
+      case 1:
+        // Right-move
+        const cpR = [ECorners.DFR, ECorners.ULF, ECorners.ULB, ECorners.URF, ECorners.DRB, ECorners.DLF, ECorners.DBL, ECorners.UBR]  // permutation of the corners
+        const coR = [2, 0, 0, 1, 1, 0, 0, 2]  // changes of the orientations of the corners
+        const epR = [EEdges.FR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.BR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.DR, EEdges.FL, EEdges.BL, EEdges.UR]  // permutation of the edges
+        const eoR = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  // changes of the permutations of the edges
+        return new CubieCube(cpR, coR, epR, eoR)
+      case 2:
+        // Front-move
+        const cpF = [ECorners.ULF, ECorners.DLF, ECorners.ULB, ECorners.UBR, ECorners.URF, ECorners.DFR, ECorners.DBL, ECorners.DRB]
+        const coF = [1, 2, 0, 0, 2, 1, 0, 0]
+        const epF = [EEdges.UR, EEdges.FL, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.FR, EEdges.DL, EEdges.DB, EEdges.UF, EEdges.DF, EEdges.BL, EEdges.BR]
+        const eoF = [0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0]
+        return new CubieCube(cpF, coF, epF, eoF)
+      case 3:
+        // Down-move
+        const cpD = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DLF, ECorners.DBL, ECorners.DRB, ECorners.DFR]
+        const coD = [0, 0, 0, 0, 0, 0, 0, 0]
+        const epD = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.DR, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+        const eoD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpD, coD, epD, eoD)
+      case 4:
+        // Left-move
+        const cpL = [ECorners.URF, ECorners.ULB, ECorners.DBL, ECorners.UBR, ECorners.DFR, ECorners.ULF, ECorners.DLF, ECorners.DRB]
+        const coL = [0, 1, 2, 0, 0, 2, 1, 0]
+        const epL = [EEdges.UR, EEdges.UF, EEdges.BL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.FL, EEdges.DB, EEdges.FR, EEdges.UL, EEdges.DL, EEdges.BR]
+        const eoL = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpL, coL, epL, eoL)
+      case 5:
+        // Back-move
+        const cpB = [ECorners.URF, ECorners.ULF, ECorners.UBR, ECorners.DRB, ECorners.DFR, ECorners.DLF, ECorners.ULB, ECorners.DBL]
+        const coB = [0, 0, 1, 2, 0, 0, 2, 1]
+        const epB = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.BR, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.BL, EEdges.FR, EEdges.FL, EEdges.UB, EEdges.DB]
+        const eoB = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1]
+        return new CubieCube(cpB, coB, epB, eoB)
+      default:
+        return undefined
+        break;
+    }
+
+  }
 
 
   /**
