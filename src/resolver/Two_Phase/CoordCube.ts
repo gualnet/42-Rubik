@@ -23,6 +23,9 @@ export default class CoordinateCube {
   flipsliceClassidx: number = 0;
   flipsliceSym: number = 0;
   flipsliceRep: number = 0;
+  cornerClassidx: number = 0;
+  cornerSym: number = 0;
+  cornerRep: number = 0;
 
   constructor(cubieCubie?: CubieCube) {
     if (!cubieCubie) {
@@ -47,17 +50,27 @@ export default class CoordinateCube {
 
       // Symmetry reduced flipslice coordinate used in phase 1
       const indice = D.N_FLIP * Math.floor(this.sliceSorted / D.N_PERM_4) + this.flip;
-      this.flipsliceClassidx = symmetry.flipslice_classidx[indice];
-      this.flipsliceSym = symmetry.flipslice_sym[indice];
-      this.flipsliceRep = symmetry.flipslice_rep[this.flipsliceClassidx];
+      this.flipsliceClassidx = symmetry.flipsliceClassIdx[indice];
+      this.flipsliceSym = symmetry.flipsliceSym[indice];
+      this.flipsliceRep = symmetry.flipsliceRep[this.flipsliceClassidx];
 
       // Symmetry reduced corner permutation coordinate used in phase 2
-      this.flipsliceClassidx
-      this.flipsliceSym
-      this.flipsliceRep
-      
+      this.cornerClassidx = symmetry.cornerClassIdx[this.corners]
+      this.cornerSym = symmetry.cornerSym[this.corners]
+      this.cornerRep = symmetry.cornerRep[this.cornerClassidx]
     }
-  }
+  };
 
+  toString = () => {
+    let str = `(twist: ${this.twist}, flip: ${this.flip}, slice: ${Math.floor(this.sliceSorted / 24)} 
+    U-edges: ${this.upEdges}, D-edges: ${this.downEdges}, E-edges: ${this.sliceSorted}, corners: ${this.corners}, UD_edges: ${this.udEdges})\n`;
+    str += `${this.flipsliceClassidx} - ${this.flipsliceSym} - ${this.flipsliceRep}\n`;
+    str += `${this.cornerClassidx} - ${this.cornerSym} - ${this.cornerRep}`;
+    return str;
+  };
+
+  firstPhaseMoves = (m) => {
+
+  };
 
 };
