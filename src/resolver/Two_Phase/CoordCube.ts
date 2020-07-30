@@ -69,7 +69,7 @@ export default class CoordinateCube {
     return str;
   };
 
-  firstPhaseMoves = (m) => {
+  firstPhaseMoves = (m: any) => {
 
   };
 

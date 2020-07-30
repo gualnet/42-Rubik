@@ -11,6 +11,7 @@ export default {
   N_CORNERS: 40320, // 8! corner permutations in phase 2
   N_CORNERS_CLASS: 2768, //number of equivalence classes concerning symmetry group D4h
   N_UD_EDGES: 40320, //8! permutations of the edges in the U-face and D-face in phase 2
+  N_MOVE: 18, // number of possible face moves
 
 
   NB_COLORS: 6, // Number of colors

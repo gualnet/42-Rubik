@@ -658,6 +658,65 @@ class CubieCube {
     return true
   };
 
+  
+
+
+  /**
+   * Representation of the basic cube moves
+   * @param idx {number} 0 <= idx <= 5
+   * @returns undefined || CubieCube[]
+   */
+  static basicMoveCube = (idx: number) => {
+    switch (idx) {
+      case 0:
+        // Up-move
+        const cpU = [ECorners.UBR, ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.DFR, ECorners.DLF, ECorners.DBL, ECorners.DRB]
+        const coU = [0, 0, 0, 0, 0, 0, 0, 0]
+        const epU = [EEdges.UB, EEdges.UR, EEdges.UF, EEdges.UL, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+        const eoU = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpU, coU, epU, eoU)
+      case 1:
+        // Right-move
+        const cpR = [ECorners.DFR, ECorners.ULF, ECorners.ULB, ECorners.URF, ECorners.DRB, ECorners.DLF, ECorners.DBL, ECorners.UBR]  // permutation of the corners
+        const coR = [2, 0, 0, 1, 1, 0, 0, 2]  // changes of the orientations of the corners
+        const epR = [EEdges.FR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.BR, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.DR, EEdges.FL, EEdges.BL, EEdges.UR]  // permutation of the edges
+        const eoR = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  // changes of the permutations of the edges
+        return new CubieCube(cpR, coR, epR, eoR)
+      case 2:
+        // Front-move
+        const cpF = [ECorners.ULF, ECorners.DLF, ECorners.ULB, ECorners.UBR, ECorners.URF, ECorners.DFR, ECorners.DBL, ECorners.DRB]
+        const coF = [1, 2, 0, 0, 2, 1, 0, 0]
+        const epF = [EEdges.UR, EEdges.FL, EEdges.UL, EEdges.UB, EEdges.DR, EEdges.FR, EEdges.DL, EEdges.DB, EEdges.UF, EEdges.DF, EEdges.BL, EEdges.BR]
+        const eoF = [0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0]
+        return new CubieCube(cpF, coF, epF, eoF)
+      case 3:
+        // Down-move
+        const cpD = [ECorners.URF, ECorners.ULF, ECorners.ULB, ECorners.UBR, ECorners.DLF, ECorners.DBL, ECorners.DRB, ECorners.DFR]
+        const coD = [0, 0, 0, 0, 0, 0, 0, 0]
+        const epD = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.UB, EEdges.DF, EEdges.DL, EEdges.DB, EEdges.DR, EEdges.FR, EEdges.FL, EEdges.BL, EEdges.BR]
+        const eoD = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpD, coD, epD, eoD)
+      case 4:
+        // Left-move
+        const cpL = [ECorners.URF, ECorners.ULB, ECorners.DBL, ECorners.UBR, ECorners.DFR, ECorners.ULF, ECorners.DLF, ECorners.DRB]
+        const coL = [0, 1, 2, 0, 0, 2, 1, 0]
+        const epL = [EEdges.UR, EEdges.UF, EEdges.BL, EEdges.UB, EEdges.DR, EEdges.DF, EEdges.FL, EEdges.DB, EEdges.FR, EEdges.UL, EEdges.DL, EEdges.BR]
+        const eoL = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return new CubieCube(cpL, coL, epL, eoL)
+      case 5:
+        // Back-move
+        const cpB = [ECorners.URF, ECorners.ULF, ECorners.UBR, ECorners.DRB, ECorners.DFR, ECorners.DLF, ECorners.ULB, ECorners.DBL]
+        const coB = [0, 0, 1, 2, 0, 0, 2, 1]
+        const epB = [EEdges.UR, EEdges.UF, EEdges.UL, EEdges.BR, EEdges.DR, EEdges.DF, EEdges.DL, EEdges.BL, EEdges.FR, EEdges.FL, EEdges.UB, EEdges.DB]
+        const eoB = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1]
+        return new CubieCube(cpB, coB, epB, eoB)
+      default:
+        return undefined
+        break;
+    }
+
+  }
+
 
   /**
    * =========

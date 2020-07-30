@@ -244,14 +244,14 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`)
   let jsonstr: string;
   jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_CORNER_CLASS_IDX}`, 'utf8');
   const cornerClassIdx: Array<number> = JSON.parse(jsonstr);
-  console.log("data", cornerClassIdx);
+  // console.log("data", cornerClassIdx);
 
   jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_cornerSym}`, 'utf8');
   const cornerSym: Array<number> = JSON.parse(jsonstr);
-  console.log("data", cornerSym);
+  // console.log("data", cornerSym);
 
   jsonstr = fs.readFileSync(`${FILE_DIR_TABLE}/${FILE_cornerRep}`, 'utf8');
   const cornerRep: Array<number> = JSON.parse(jsonstr);
-  console.log("data", cornerRep);
+  // console.log("data", cornerRep);
 
 }
