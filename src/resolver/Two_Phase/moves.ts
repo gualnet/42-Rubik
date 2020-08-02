@@ -118,9 +118,10 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`)) {
  * Move table for the u_edges coordinate for transition phase 1 -> phase 2 *
  ***************************************************************************/
 const FILE_U_EDGES = 'move_u_edges.rbk';
-export let uEdgesMove = _.fill(new Array(D.N_SLICE_SORTED * D.N_MOVE), 0)
-if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`) {
+export let uEdgesMove: Array<number>;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`)) {
   console.log(`Creating ${FILE_U_EDGES} table...`);
+  uEdgesMove = _.fill(new Array(D.N_SLICE_SORTED * D.N_MOVE), 0)
 
   for (let i = 0; i < D.N_SLICE_SORTED; i++) {
     if (i % 20 === 0)
@@ -142,4 +143,34 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`) {
   fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`, JSON.stringify(uEdgesMove));
 } else {
   uEdgesMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`));
+};
+
+/***************************************************************************
+ * Move table for the d_edges coordinate for transition phase 1 -> phase 2 *
+ ***************************************************************************/
+const FILE_D_EDGES = 'move_d_edges.rbk';
+export let dEdgesMove: Array<number>;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_D_EDGES}`)) {
+  console.log(`Creating ${FILE_D_EDGES} table...`);
+  dEdgesMove = _.fill(new Array(D.N_SLICE_SORTED * D.N_MOVE), 0)
+  for (let i = 0; i < D.N_SLICE_SORTED; i++) {
+    if (i % 20 === 0)
+      process.stdout.write('.');
+    cc.setDownEdges(i);
+    for (let j = 0; j < D.NB_COLORS; j++) {
+      for (let k = 0; k < 3; k++) {
+        basicMove = CubieCube.basicMoveCube(j);
+        if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+        cc.edgeMultiply(basicMove);
+        dEdgesMove[D.N_MOVE * i + 3 * j + k] = cc.getDownEdges();
+      }
+      basicMove = CubieCube.basicMoveCube(j);
+      if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+      cc.edgeMultiply(basicMove);
+    }
+  }
+  // to file
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_D_EDGES}`, JSON.stringify(uEdgesMove));
+} else {
+  uEdgesMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_D_EDGES}`));
 }
