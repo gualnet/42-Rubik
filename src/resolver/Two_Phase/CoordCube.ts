@@ -88,4 +88,10 @@ export default class CoordinateCube {
     this.cornerRep = symmetry.cornerRep[this.cornerClassidx];
   };
 
+  secondPhaseMove = (m: any) => {
+    this.sliceSorted = moves.sliceSortedMove[D.N_MOVE * this.sliceSorted + m];
+    this.corners = moves.cornersMove[D.N_MOVE * this.corners + m];
+    this.udEdges = moves.udEdgesMove[D.N_MOVE * this.udEdges + m];
+  };
+
 };
