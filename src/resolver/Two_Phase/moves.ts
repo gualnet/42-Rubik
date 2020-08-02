@@ -84,7 +84,7 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_MOVE_FLIP}`)) {
  * Move table for the four UD-slice edges FR, FL, Bl and BR *
  ************************************************************/
 const FILE_SLICE_SORTED = 'move_slice_sorted.rbk';
-let sliceSortedMove: Array<number>;
+export let sliceSortedMove: Array<number>;
 // let basicMove: CubieCube | undefined;
 if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`)) {
   console.log(`Creating ${FILE_SLICE_SORTED} table...`);
@@ -113,3 +113,33 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`)) {
   console.log(`Loading ${FILE_SLICE_SORTED} tables...`);
   sliceSortedMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`));
 };
+
+/***************************************************************************
+ * Move table for the u_edges coordinate for transition phase 1 -> phase 2 *
+ ***************************************************************************/
+const FILE_U_EDGES = 'move_u_edges.rbk';
+export let uEdgesMove = _.fill(new Array(D.N_SLICE_SORTED * D.N_MOVE), 0)
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`) {
+  console.log(`Creating ${FILE_U_EDGES} table...`);
+
+  for (let i = 0; i < D.N_SLICE_SORTED; i++) {
+    if (i % 20 === 0)
+      process.stdout.write(".");
+    cc.setUpEdges(i);
+    for (let j = 0; i < D.NB_COLORS; j++) {
+      for (let k = 0; k < 3; k++) {
+        basicMove = CubieCube.basicMoveCube(j);
+        if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+        cc.edgeMultiply(basicMove);
+        uEdgesMove[D.N_MOVE * i + 3 * j + k] = cc.getUpEdges();
+      }
+      basicMove = CubieCube.basicMoveCube(j);
+      if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+      cc.edgeMultiply(basicMove);
+    }
+  }
+  // To file
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`, JSON.stringify(uEdgesMove));
+} else {
+  uEdgesMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_U_EDGES}`));
+}
