@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import CubieCube from './CubieCube';
 import D from './defines';
+import { CubicEase } from '@babylonjs/core';
 
 /********************************************
  * Move table for the twists of the corners *
@@ -53,7 +54,7 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_MOVE_TWIST}`)) {
  ****************************************/
 
 const FILE_MOVE_FLIP = "move_flip.rbk";
-let flipMove: Array<number>;
+export let flipMove: Array<number>;
 let basicMove: CubieCube | undefined;
 if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_MOVE_FLIP}`)) {
   console.log(`Creating ${FILE_MOVE_FLIP} table...`);
@@ -77,4 +78,38 @@ if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_MOVE_FLIP}`)) {
 } else {
   console.log(`Loading ${FILE_MOVE_FLIP} tables...`);
   flipMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_MOVE_FLIP}`));
+};
+
+/************************************************************
+ * Move table for the four UD-slice edges FR, FL, Bl and BR *
+ ************************************************************/
+const FILE_SLICE_SORTED = 'move_slice_sorted.rbk';
+let sliceSortedMove: Array<number>;
+// let basicMove: CubieCube | undefined;
+if (!fs.existsSync(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`)) {
+  console.log(`Creating ${FILE_SLICE_SORTED} table...`);
+
+  sliceSortedMove = _.fill(new Array(D.N_SLICE_SORTED * D.N_MOVE), 0);
+  for (let i = 0; i < D.N_SLICE_SORTED; i++) {
+    if (i % 200 === 0)
+      process.stdout.write(".")
+    cc.setSliceSorted(i)
+    for (let j = 0; j < D.NB_COLORS; i++) {
+      for (let k = 0; k < 3; k++) {
+        basicMove = CubieCube.basicMoveCube(j);
+        if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+        cc.edgeMultiply(basicMove)
+        sliceSortedMove[D.N_MOVE * i + 3 * j + k] = cc.getSliceSorted();
+      }
+      basicMove = CubieCube.basicMoveCube(j);
+      if (!basicMove) throw(new Error('[ERROR] move - basic move value: undefined.'));
+      cc.edgeMultiply(basicMove);
+    }
+  }
+  const str = JSON.stringify(sliceSortedMove);
+  fs.writeFileSync(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`, str);
+
+} else {
+  console.log(`Loading ${FILE_SLICE_SORTED} tables...`);
+  sliceSortedMove = JSON.parse(require(`${FILE_DIR_TABLE}/${FILE_SLICE_SORTED}`));
 };
