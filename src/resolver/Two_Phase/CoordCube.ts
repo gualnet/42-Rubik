@@ -1,6 +1,7 @@
 import CubieCube from "./CubieCube";
 import * as symmetry from './symmetries'
 import D from './defines';
+import * as moves from './moves';
 
 
 const SOLVED = 0;
@@ -70,7 +71,21 @@ export default class CoordinateCube {
   };
 
   firstPhaseMoves = (m: any) => {
+    this.twist = moves.twistMove[D.N_MOVE * this.twist + m];
+    this.flip = moves.flipMove[D.N_MOVE * this.flip + m];
+    this.sliceSorted = moves.sliceSortedMove[D.N_MOVE * this.sliceSorted + m]
+    // optionel
+    this.upEdges = moves.uEdgesMove[D.N_MOVE * this.upEdges + m];
+    this.downEdges = moves.dEdgesMove[D.N_MOVE * this.downEdges + m];
+    this. corners = moves.cornersMove[D.N_MOVE * this.corners + m];
 
+    this.flipsliceClassidx = symmetry.flipsliceClassIdx[D.N_FLIP * (Math.floor(this.sliceSorted / D.N_PERM_4) + this.flip)];
+    this.flipsliceSym = symmetry.flipsliceSym[D.N_FLIP + (Math.floor(this.sliceSorted / D.N_PERM_4) + this.flip)];
+    this.flipsliceRep = symmetry.flipsliceRep[this.flipsliceClassidx];
+
+    this.cornerClassidx = symmetry.cornerClassIdx[this.corners];
+    this.cornerSym = symmetry.cornerSym[this.corners];
+    this.cornerRep = symmetry.cornerRep[this.cornerClassidx];
   };
 
 };
